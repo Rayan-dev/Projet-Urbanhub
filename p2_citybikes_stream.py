@@ -39,6 +39,8 @@ session = requests.Session()
 session.headers["User-Agent"] = "UrbanHub-student-project"
 
 quota = {"remaining": None, "reset": None, "limit": None, "seen": 0.0}
+# Coût moyen d'une requête en unités de quota (mesuré : les gros réseaux comptent plusieurs unités)
+cost = {"per_req": 4.0}
 
 
 def _hdr(r, name):
@@ -91,10 +93,22 @@ def budget(interval):
         return max(1, int(FALLBACK_PER_HOUR * interval / 3600))
     elapsed = time.time() - quota["seen"]
     reset_left = quota["reset"] - elapsed
+    c = cost["per_req"]
     if reset_left <= 0:                       # le quota a été remis à zéro depuis
-        return max(1, int((quota["limit"] or FALLBACK_PER_HOUR) * interval / 3600 * SAFETY))
+        return max(1, int((quota["limit"] or FALLBACK_PER_HOUR) * interval / 3600 * SAFETY / c))
     cycles_left = max(1.0, reset_left / interval)
-    return int(max(0, quota["remaining"] or 0) * SAFETY / cycles_left)
+    return int(max(0, quota["remaining"] or 0) * SAFETY / cycles_left / c)
+
+
+def update_cost(before, n_requests):
+    """Mesure le coût réel d'une requête à partir de la baisse du quota restant."""
+    rem0, reset0 = before
+    rem1, reset1 = quota["remaining"], quota["reset"]
+    if None in (rem0, rem1, reset0, reset1) or n_requests == 0:
+        return
+    if rem1 < rem0 and reset1 <= reset0:      # même fenêtre horaire
+        measured = (rem0 - rem1) / n_requests
+        cost["per_req"] = max(1.0, 0.5 * cost["per_req"] + 0.5 * measured)
 
 
 def write_rows(now, net, stations):
@@ -143,6 +157,7 @@ def main():
             todo.append(others[0])
             others.rotate(-1)
         now = datetime.now(timezone.utc)
+        before = (quota["remaining"], quota["reset"])
         n_st, done = 0, []
         for net in todo:
             try:
@@ -151,12 +166,14 @@ def main():
                 done.append(net["id"])
             except Exception as e:     # ne jamais arrêter la collecte pour une erreur ponctuelle
                 print(f"  erreur {net['id']} : {e}", flush=True)
+        update_cost(before, len(done))
         q = ""
         if quota["remaining"] is not None:
             q = f" | quota restant {quota['remaining']}"
             if quota["limit"]:
                 q += f"/{quota['limit']}"
             q += f", remise à zéro dans {max(0, quota['reset'] - (time.time() - quota['seen'])) / 60:.0f} min"
+            q += f", coût ~{cost['per_req']:.1f}/requête"
         if done:
             print(f"{datetime.now():%H:%M:%S} relevé {i}: {n_st} stations ({', '.join(done)}){q}", flush=True)
         else:
