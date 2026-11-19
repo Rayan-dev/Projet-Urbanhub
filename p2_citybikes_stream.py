@@ -26,9 +26,28 @@ FIELDS = ["poll_time", "network_id", "city", "station_id", "station_name",
 session = requests.Session()
 session.headers["User-Agent"] = "UrbanHub-student-project"
 
+# Limite publique CityBikes : 300 requêtes / heure (on garde une marge)
+HOURLY_BUDGET = 270
+
+
+def get(url, **params):
+    """GET qui attend la remise à zéro du quota au lieu de planter sur une erreur 429."""
+    while True:
+        r = session.get(url, params=params, timeout=30)
+        if r.status_code == 429:
+            try:
+                wait = int(float(r.headers.get("ratelimit-reset", 300))) + 5
+            except ValueError:
+                wait = 300
+            print(f"{datetime.now():%H:%M:%S} quota CityBikes atteint, attente {wait // 60} min {wait % 60} s…")
+            time.sleep(wait)
+            continue
+        r.raise_for_status()
+        return r.json()
+
 
 def french_networks(all_fr):
-    nets = session.get(API, params={"fields": "id,name,location"}, timeout=30).json()["networks"]
+    nets = get(API, fields="id,name,location")["networks"]
     nets = [n for n in nets if n["location"].get("country") == "FR"]
     for n in nets:
         n["city"] = nearest_city(n["location"]["latitude"], n["location"]["longitude"])
@@ -38,9 +57,7 @@ def french_networks(all_fr):
 
 
 def fetch(net):
-    r = session.get(f"{API}/{net['id']}", params={"fields": "stations"}, timeout=30)
-    r.raise_for_status()
-    return net, r.json()["network"]["stations"]
+    return net, get(f"{API}/{net['id']}", fields="stations")["network"]["stations"]
 
 
 def poll(nets):
@@ -84,6 +101,11 @@ def main():
     args = ap.parse_args()
     nets = french_networks(args.all_fr)
     print(f"{len(nets)} réseaux suivis :", ", ".join(f"{n['id']} ({n['city']})" for n in nets))
+    # 1 requête par réseau et par relevé : on adapte l'intervalle pour rester sous le quota horaire
+    min_interval = int(len(nets) * 3600 / HOURLY_BUDGET) + 1
+    if args.interval < min_interval:
+        print(f"Intervalle porté de {args.interval} s à {min_interval} s pour respecter le quota de 300 requêtes/h")
+        args.interval = min_interval
     i = 0
     while True:
         t0 = time.time()
@@ -93,7 +115,7 @@ def main():
         except Exception as e:  # ne jamais arrêter la collecte pour une erreur ponctuelle
             print("Erreur :", e)
         i += 1
-        if i % 30 == 0:  # rafraîchit la liste des réseaux ~toutes les heures
+        if i % 300 == 0:  # rafraîchit la liste des réseaux ~toutes les 10 h
             try:
                 nets = french_networks(args.all_fr)
             except Exception:
