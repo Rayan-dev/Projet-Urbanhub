@@ -1,25 +1,27 @@
-"""Partie 2 – Flux Streaming : vélos en libre-service (CityBikes API), réseaux français.
+"""Partie 2 – Flux Streaming : vélos en libre-service, principales villes de France.
 
-Interroge l'API à intervalle régulier et ajoute chaque relevé au data lake :
+Un relevé toutes les 150 s, ajouté au data lake :
     data/raw/citybikes/date=YYYY-MM-DD/snapshots.csv
 
-Quota : l'API publique CityBikes limite le nombre de requêtes par heure (une requête par
-réseau et par relevé). Le script lit le quota réel dans les en-têtes de réponse
-(ratelimit-remaining / ratelimit-reset) et répartit les requêtes restantes sur l'heure :
-  - Vélib' (Paris) est interrogé à chaque relevé (priorité) ;
-  - les autres réseaux sont interrogés à tour de rôle avec le budget restant.
-Il ne dépasse donc plus le quota, et attend la remise à zéro si besoin au lieu de planter.
+Sources :
+  - CityBikes API (api.citybik.es) pour tous les réseaux français des villes cibles.
+    L'API publique est limitée à 300 « unités » par heure, et une requête coûte d'autant plus
+    d'unités que le réseau a de stations (Vélib' ≈ 25 unités, petit réseau ≈ 1). Le script mesure
+    le coût réel de chaque réseau dans les en-têtes (ratelimit-remaining / ratelimit-reset) et
+    répartit le quota : réseaux interrogés du plus ancien relevé au plus récent, tant que le budget
+    le permet. Il ne dépasse jamais le quota et ne s'arrête jamais.
+  - Paris (Vélib') : flux GBFS open data officiel de Vélib' Métropole (celui que CityBikes agrège),
+    sans quota, interrogé à chaque relevé. network_id = "velib-gbfs". Si ce flux échoue, Vélib'
+    repasse par CityBikes.
 
 Usage :
-    python p2_citybikes_stream.py                 # relevé toutes les 150 s (Ctrl+C pour arrêter)
+    python p2_citybikes_stream.py                 # Ctrl+C pour arrêter
     python p2_citybikes_stream.py --interval 180
-    python p2_citybikes_stream.py --all-fr        # tous les réseaux français
 """
 import argparse
 import csv
 import json
 import time
-from collections import deque
 from datetime import datetime, timezone
 
 import requests
@@ -27,20 +29,27 @@ import requests
 from config import RAW, nearest_city
 
 API = "https://api.citybik.es/v2/networks"
+GBFS_VELIB = "https://velib-metropole-opendata.smovengo.cloud/opendata/Velib_Metropole"
 OUT = RAW / "citybikes"
 NETS_CACHE = RAW / "citybikes_networks.json"
 FIELDS = ["poll_time", "network_id", "city", "station_id", "station_name",
           "latitude", "longitude", "bikes_available", "free_slots", "timestamp"]
-PRIORITY = ["velib"]          # interrogés à chaque relevé
-SAFETY = 0.85                 # on n'utilise que 85 % du quota restant
-FALLBACK_PER_HOUR = 60        # si l'API ne renvoie pas d'en-têtes de quota
+SAFETY = 0.85                 # part du quota restant que l'on s'autorise à utiliser
+RESERVE = 5                   # unités jamais dépensées
+CREDIT_CAP = 80               # crédit maximal accumulé entre deux relevés
+FALLBACK_PER_HOUR = 60
+DEFAULT_COST = {"velib": 25.0}
 
 session = requests.Session()
 session.headers["User-Agent"] = "UrbanHub-student-project"
 
 quota = {"remaining": None, "reset": None, "limit": None, "seen": 0.0}
-# Coût moyen d'une requête en unités de quota (mesuré : les gros réseaux comptent plusieurs unités)
-cost = {"per_req": 4.0}
+cost = {}                     # coût mesuré par réseau (unités de quota)
+velib_info = {"stations": None, "fetched": 0.0}
+
+
+class QuotaExceeded(Exception):
+    pass
 
 
 def _hdr(r, name):
@@ -53,69 +62,90 @@ def _hdr(r, name):
     return None
 
 
-def get(url, **params):
-    """GET : met à jour l'état du quota ; sur 429, attend la remise à zéro puis réessaie."""
-    while True:
-        r = session.get(url, params=params, timeout=30)
-        rem, reset, lim = _hdr(r, "remaining"), _hdr(r, "reset"), _hdr(r, "limit")
-        if reset is not None:
-            quota.update(remaining=rem, reset=reset, limit=lim, seen=time.time())
-        if r.status_code == 429:
-            wait = (reset if reset is not None else 300) + 5
-            quota.update(remaining=0, reset=wait, seen=time.time())
-            print(f"{datetime.now():%H:%M:%S} quota CityBikes atteint, attente {wait // 60} min {wait % 60} s...",
-                  flush=True)
+def reset_left():
+    if quota["reset"] is None:
+        return None
+    return quota["reset"] - (time.time() - quota["seen"])
+
+
+def citybikes_get(url, **params):
+    r = session.get(url, params=params, timeout=30)
+    rem, reset, lim = _hdr(r, "remaining"), _hdr(r, "reset"), _hdr(r, "limit")
+    if reset is not None:
+        quota.update(remaining=rem, reset=reset, limit=lim or quota["limit"], seen=time.time())
+    if r.status_code == 429:
+        quota.update(remaining=0, reset=reset if reset is not None else 300, seen=time.time())
+        raise QuotaExceeded()
+    r.raise_for_status()
+    return r.json()
+
+
+def french_networks():
+    """Réseaux français des villes cibles (mis en cache : aucune requête à chaque relance)."""
+    while not NETS_CACHE.exists():
+        try:
+            nets = citybikes_get(API, fields="id,name,location")["networks"]
+            nets = [n for n in nets if n["location"].get("country") == "FR"]
+            NETS_CACHE.parent.mkdir(parents=True, exist_ok=True)
+            NETS_CACHE.write_text(json.dumps(nets), encoding="utf-8")
+        except QuotaExceeded:
+            wait = int(reset_left() or 300) + 5
+            print(f"{datetime.now():%H:%M:%S} quota CityBikes atteint, attente {wait // 60} min...", flush=True)
             time.sleep(wait)
-            continue
-        r.raise_for_status()
-        return r.json()
-
-
-def french_networks(all_fr, refresh=False):
-    """Liste des réseaux français ; mise en cache pour ne pas consommer de requête à chaque relance."""
-    if NETS_CACHE.exists() and not refresh:
-        nets = json.loads(NETS_CACHE.read_text(encoding="utf-8"))
-    else:
-        nets = get(API, fields="id,name,location")["networks"]
-        nets = [n for n in nets if n["location"].get("country") == "FR"]
-        NETS_CACHE.parent.mkdir(parents=True, exist_ok=True)
-        NETS_CACHE.write_text(json.dumps(nets), encoding="utf-8")
+    nets = json.loads(NETS_CACHE.read_text(encoding="utf-8"))
     for n in nets:
         n["city"] = nearest_city(n["location"]["latitude"], n["location"]["longitude"])
-    if not all_fr:
-        nets = [n for n in nets if n["city"]]
-    return nets
+    return [n for n in nets if n["city"]]
 
 
-def budget(interval):
-    """Nombre de requêtes autorisées pour ce relevé, d'après le quota restant."""
-    if quota["reset"] is None:
-        return max(1, int(FALLBACK_PER_HOUR * interval / 3600))
-    elapsed = time.time() - quota["seen"]
-    reset_left = quota["reset"] - elapsed
-    c = cost["per_req"]
-    if reset_left <= 0:                       # le quota a été remis à zéro depuis
-        return max(1, int((quota["limit"] or FALLBACK_PER_HOUR) * interval / 3600 * SAFETY / c))
-    cycles_left = max(1.0, reset_left / interval)
-    return int(max(0, quota["remaining"] or 0) * SAFETY / cycles_left / c)
+def budget_units(interval):
+    """Unités de quota attribuées à ce relevé."""
+    left = reset_left()
+    if left is None:
+        return FALLBACK_PER_HOUR * interval / 3600
+    if left <= 0:   # quota remis à zéro depuis la dernière réponse
+        return (quota["limit"] or FALLBACK_PER_HOUR) * interval / 3600 * SAFETY
+    usable = max(0, (quota["remaining"] or 0) - RESERVE) * SAFETY
+    return usable / max(1.0, left / interval)
 
 
-def update_cost(before, n_requests):
-    """Mesure le coût réel d'une requête à partir de la baisse du quota restant."""
-    rem0, reset0 = before
-    rem1, reset1 = quota["remaining"], quota["reset"]
-    if None in (rem0, rem1, reset0, reset1) or n_requests == 0:
-        return
-    if rem1 < rem0 and reset1 <= reset0:      # même fenêtre horaire
-        measured = (rem0 - rem1) / n_requests
-        cost["per_req"] = max(1.0, 0.5 * cost["per_req"] + 0.5 * measured)
+def remaining_estimate():
+    left = reset_left()
+    if left is None or left <= 0:
+        return quota["limit"] or FALLBACK_PER_HOUR
+    return quota["remaining"] or 0
 
 
-def write_rows(now, net, stations):
+def fetch_velib_gbfs():
+    """Stations Vélib' via le flux GBFS officiel (pas de quota)."""
+    if velib_info["stations"] is None or time.time() - velib_info["fetched"] > 6 * 3600:
+        info = session.get(f"{GBFS_VELIB}/station_information.json", timeout=30).json()
+        velib_info["stations"] = {s["station_id"]: s for s in info["data"]["stations"]}
+        velib_info["fetched"] = time.time()
+    status = session.get(f"{GBFS_VELIB}/station_status.json", timeout=30).json()["data"]["stations"]
+    out = []
+    for s in status:
+        meta = velib_info["stations"].get(s["station_id"])
+        if meta is None or s.get("is_installed", 1) == 0:
+            continue
+        ts = s.get("last_reported")
+        out.append({
+            "id": f"velib-{meta.get('stationCode', s['station_id'])}",
+            "name": meta.get("name"),
+            "latitude": meta.get("lat"),
+            "longitude": meta.get("lon"),
+            "free_bikes": s.get("num_bikes_available"),
+            "empty_slots": s.get("num_docks_available"),
+            "timestamp": datetime.fromtimestamp(ts, timezone.utc).isoformat() if ts else None,
+        })
+    return out
+
+
+def write_rows(now, network_id, city, stations):
     rows = [{
         "poll_time": now.isoformat(),
-        "network_id": net["id"],
-        "city": net["city"] or net["location"].get("city"),
+        "network_id": network_id,
+        "city": city,
         "station_id": s["id"],
         "station_name": s.get("name"),
         "latitude": s.get("latitude"),
@@ -138,46 +168,64 @@ def write_rows(now, net, stations):
 def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--interval", type=int, default=150, help="secondes entre deux relevés")
-    ap.add_argument("--all-fr", action="store_true")
     args = ap.parse_args()
 
-    nets = french_networks(args.all_fr)
-    prio = [n for n in nets if n["id"] in PRIORITY]
-    others = deque(n for n in nets if n["id"] not in PRIORITY)
-    print(f"{len(nets)} réseaux suivis :", ", ".join(f"{n['id']} ({n['city']})" for n in nets), flush=True)
-    print(f"Prioritaire(s) à chaque relevé : {', '.join(n['id'] for n in prio) or 'aucun'} ; "
-          f"les autres à tour de rôle selon le quota. Relevé toutes les {args.interval} s.", flush=True)
+    nets = french_networks()
+    last = {n["id"]: 0.0 for n in nets}
+    print(f"{len(nets)} réseaux CityBikes :", ", ".join(f"{n['id']} ({n['city']})" for n in nets), flush=True)
+    print(f"Paris via le flux GBFS Vélib' à chaque relevé ; CityBikes réparti selon le quota. "
+          f"Relevé toutes les {args.interval} s.", flush=True)
 
-    i = 0
+    credit, i = 0.0, 0
     while True:
         t0 = time.time()
-        allowed = budget(args.interval)
-        todo = prio[:allowed]
-        while len(todo) < allowed and others and len(todo) < len(nets):
-            todo.append(others[0])
-            others.rotate(-1)
         now = datetime.now(timezone.utc)
-        before = (quota["remaining"], quota["reset"])
         n_st, done = 0, []
+
+        # 1) Paris : flux GBFS officiel
+        gbfs_ok = False
+        try:
+            n_st += write_rows(now, "velib-gbfs", "Paris", fetch_velib_gbfs())
+            done.append("velib-gbfs")
+            gbfs_ok = True
+        except Exception as e:
+            print(f"  flux GBFS Vélib' indisponible ({e}) : Vélib' passe par CityBikes", flush=True)
+
+        # 2) CityBikes : du relevé le plus ancien au plus récent, dans la limite du crédit
+        credit = min(credit + budget_units(args.interval), CREDIT_CAP)
+        todo = sorted((n for n in nets if not (gbfs_ok and n["id"] == "velib")), key=lambda n: last[n["id"]])
         for net in todo:
+            c = cost.get(net["id"], DEFAULT_COST.get(net["id"], 3.0))
+            if c > credit or remaining_estimate() - c < RESERVE:
+                break                     # on économise pour ce réseau au prochain relevé
+            rem0, left0 = quota["remaining"], reset_left()
             try:
-                data = get(f"{API}/{net['id']}", fields="stations")
-                n_st += write_rows(now, net, data["network"]["stations"])
-                done.append(net["id"])
-            except Exception as e:     # ne jamais arrêter la collecte pour une erreur ponctuelle
+                data = citybikes_get(f"{API}/{net['id']}", fields="stations")
+            except QuotaExceeded:
+                print(f"  quota CityBikes atteint : reprise automatique dans {int(reset_left() or 0) // 60} min",
+                      flush=True)
+                credit = 0.0
+                break
+            except Exception as e:
                 print(f"  erreur {net['id']} : {e}", flush=True)
-        update_cost(before, len(done))
+                last[net["id"]] = time.time()
+                continue
+            n_st += write_rows(now, net["id"], net["city"], data["network"]["stations"])
+            done.append(net["id"])
+            last[net["id"]] = time.time()
+            # coût réel de cette requête
+            if rem0 is not None and left0 is not None and left0 > 0 and quota["remaining"] is not None \
+                    and quota["remaining"] < rem0:
+                measured = rem0 - quota["remaining"]
+                cost[net["id"]] = 0.5 * cost.get(net["id"], measured) + 0.5 * measured
+            credit -= cost.get(net["id"], c)
+
         q = ""
         if quota["remaining"] is not None:
-            q = f" | quota restant {quota['remaining']}"
-            if quota["limit"]:
-                q += f"/{quota['limit']}"
-            q += f", remise à zéro dans {max(0, quota['reset'] - (time.time() - quota['seen'])) / 60:.0f} min"
-            q += f", coût ~{cost['per_req']:.1f}/requête"
-        if done:
-            print(f"{datetime.now():%H:%M:%S} relevé {i}: {n_st} stations ({', '.join(done)}){q}", flush=True)
-        else:
-            print(f"{datetime.now():%H:%M:%S} relevé {i}: aucune requête (quota à économiser){q}", flush=True)
+            q = f" | quota CityBikes {quota['remaining']}/{quota['limit'] or '?'}, " \
+                f"remise à zéro dans {max(0, reset_left() or 0) / 60:.0f} min"
+        print(f"{datetime.now():%H:%M:%S} relevé {i}: {n_st} stations ({', '.join(done) or 'aucune'}){q}",
+              flush=True)
         i += 1
         time.sleep(max(0, args.interval - (time.time() - t0)))
 
