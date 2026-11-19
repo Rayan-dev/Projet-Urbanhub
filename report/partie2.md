@@ -6,7 +6,7 @@
 
 - **Source** : CityBikes API (`https://api.citybik.es/v2/networks`), qui agrège en temps réel l'état des stations de vélos en libre-service du monde entier.
 - **Périmètre** : réseaux français des 8 villes de `config.py` ([liste des réseaux affichée au lancement : velib, velov, …]).
-- **Ingestion** : `p2_citybikes_stream.py` interroge l'API **toutes les 120 secondes**. Les réseaux sont récupérés en parallèle (8 threads). Chaque relevé est ajouté au data lake dans `data/raw/citybikes/date=YYYY-MM-DD/snapshots.csv`, partitionné par jour. La collecte tourne sans interruption sur une machine dédiée, relancée automatiquement par une boucle PowerShell en cas d'erreur.
+- **Ingestion** : `p2_citybikes_stream.py` effectue un relevé **toutes les 150 secondes**. L'API publique est limitée en nombre de requêtes par heure (une requête par réseau) : le script lit le quota restant dans les en-têtes de réponse (`ratelimit-remaining`, `ratelimit-reset`) et le répartit sur l'heure. **Vélib' (Paris) est interrogé à chaque relevé**, les autres réseaux à tour de rôle avec le budget restant (environ toutes les 10 min). Chaque relevé est ajouté au data lake dans `data/raw/citybikes/date=YYYY-MM-DD/snapshots.csv`, partitionné par jour. La collecte tourne sans interruption sur une machine dédiée, relancée automatiquement par une boucle PowerShell en cas d'erreur.
 - **Volume obtenu** : [N] relevés sur [D] h ([début] → [fin] UTC), [S] stations, [L] lignes brutes.
 
 | Variable | Description |
@@ -61,6 +61,7 @@
 ## 2.4 Limites
 
 - **Pas d'historique** : CityBikes ne fournit que l'état courant des stations. L'historique « depuis l'existence du réseau » demandé n'est pas accessible via cette API. L'étude porte sur [D] h de collecte, et chaque heure de la journée n'est observée qu'une ou deux fois : les résultats sont des **tendances observées**, pas des moyennes stables.
+- **Fréquence inégale selon les villes** : à cause du quota CityBikes, seul Paris est suivi toutes les 2–3 min ; les autres villes environ toutes les 10 min. Les mouvements y sont donc sous-estimés (plusieurs changements entre deux relevés se compensent) : les comparaisons entre villes portent sur les tendances, et les analyses fines (Q4) sont faites sur Paris. Une clé API (info@citybik.es) lèverait cette limite.
 - **Mouvements estimés** : `delta` mesure la variation nette entre deux relevés. Un vélo pris puis un autre rendu dans les mêmes 2 minutes ne sont pas comptés. Les camions de rééquilibrage sont aussi comptés comme des mouvements.
 - **Choix d'architecture** : interrogation régulière de l'API et stockage partitionné par date plutôt qu'un bus de messages (Kafka), compte tenu du délai de 24 h. En production, le script deviendrait un producteur Kafka et le nettoyage un consommateur.
 
