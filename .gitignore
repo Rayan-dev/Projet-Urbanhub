@@ -1,0 +1,10 @@
+.venv/
+__pycache__/
+*.pyc
+.ipynb_checkpoints/
+
+# Donnees : trop volumineuses pour Git
+data/raw/
+data/clean/*
+# ... sauf les petites tables ville x heure, partagees pour la partie 4
+!data/clean/*_city_hourly.parquet
