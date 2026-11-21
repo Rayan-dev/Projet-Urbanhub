@@ -13,21 +13,17 @@ Une ville intelligente repose sur des données urbaines collectées en continu :
 ## 2. Architecture
 
 ```
- SOURCES                 INGESTION               DATA LAKE                TRAITEMENT          ANALYSE              INDICATEURS
- ───────                 ─────────               ─────────                ──────────          ───────              ───────────
- NOAA Global Hourly ──►  p1_noaa_batch.py   ──►  data/raw/noaa/        ──► nettoyage pandas ─► notebooks 01..03 ─►  graphiques PNG
- (fichiers, batch)       32 téléchargements      <année>/<station>.csv    (décodage, bornes,    (4 + 5 + 4          cartes folium
-                         parallèles                                        UTC, ville)          questions)          rapport
- CityBikes + GBFS   ──►  p2_citybikes_stream.py► data/raw/citybikes/   ──► dédoublonnage,    ─►                  tableau de bord
- (API, streaming)        relevé / 150 s          date=AAAA-MM-JJ/          capacité, delta                         Streamlit
-                                                 snapshots.csv                                  notebook 04
- OpenAQ API v3      ──►  p3_openaq_iot.py      ──► data/raw/openaq/       ──► unités → µg/m³, ─► (analyse croisée,
- (capteurs IoT)          discover / backfill /    sensors.csv, history/,    ratio OMS            4 questions)
-                         stream (10 min)          stream/date=…/
-                                          │
-                                          ▼
-                              data/clean/*.parquet   +   *_city_hourly.parquet
-                              clés communes : city (config.py) × hour (UTC, dt.floor("h"))
+ SOURCES               INGESTION                 DATA LAKE (données brutes)
+ NOAA Global Hourly -> p1_noaa_batch.py       -> data/raw/noaa/<année>/<station>.csv
+ CityBikes + GBFS   -> p2_citybikes_stream.py -> data/raw/citybikes/date=AAAA-MM-JJ/
+ OpenAQ API v3      -> p3_openaq_iot.py       -> data/raw/openaq/{sensors.csv, history/, stream/}
+                                |
+                                v   TRAITEMENT : nettoyage pandas (UTC, unités, doublons, ville)
+                  data/clean/*.parquet  +  *_city_hourly.parquet
+                  clés communes : city (config.py) x hour (UTC, dt.floor("h"))
+                                |
+                                v   ANALYSE : notebooks 01 à 04 (4 + 5 + 4 + 4 questions)
+                  INDICATEURS : graphiques PNG, cartes folium, rapport, tableau de bord Streamlit
 ```
 
 **Rôle des trois types de flux**
