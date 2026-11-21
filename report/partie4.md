@@ -26,8 +26,8 @@ Croiser les trois flux d'UrbanHub (météo NOAA, pollution OpenAQ, vélos CityBi
 ### Q1 — Vent ↔ NO2/PM, température ↔ O3, pluie ↔ PM
 - **Méthode** : Spearman météo × polluants sur `wp`, heatmap + `regplot`.
 - **Graphiques** : `figures/p4_q1_heatmap.png`, `figures/p4_q1_regplots.png`
-- **Chiffre clé** : ρ vent ↔ NO2 = −0,56 (n = 1 274) ; vent ↔ PM2.5 = −0,42 (n = 1 312) ; vent ↔ PM10 = −0,33 (n = 1 250) ; température ↔ O3 = +0,28 (n = 1 242) ; pluie ↔ PM2.5 = −0,22 (n = 1 312) ; pluie ↔ PM10 = −0,31 (n = 1 250). Tous significatifs (p < 0,001).
-- **Interprétation** : Plus le vent est fort, plus NO2 et particules sont faibles : le vent disperse les polluants primaires, l'effet le plus net (NO2). L'ozone est plus élevé quand il fait plus chaud (formation photochimique), l'association restant modérée. La pluie va avec des particules plus faibles, compatible avec un lessivage. Corrélation ≠ causalité : température, vent et pluie varient aussi avec le cycle quotidien.
+- **Chiffre clé** : ρ vent ↔ NO2 = −0,56 (n = 1 274) ; vent ↔ PM2.5 = −0,42 (n = 1 312) ; vent ↔ PM10 = −0,33 (n = 1 250) ; température ↔ O3 = +0,28 (n = 1 242) ; pluie ↔ PM2.5 = −0,22 (n = 1 312) ; pluie ↔ PM10 = −0,31 (n = 1 250). Tous significatifs (p < 0,001). La heatmap montre aussi vent ↔ O3 = +0,69, la corrélation la plus forte du graphique.
+- **Interprétation** : Plus le vent est fort, plus NO2 et particules sont faibles : le vent disperse les polluants primaires, l'effet le plus net (NO2). L'ozone est plus élevé quand il fait plus chaud (formation photochimique), l'association restant modérée. Le vent est aussi associé à plus d'ozone (ρ = +0,69), ce qui peut refléter un air mieux mélangé et moins d'ozone détruit par le NO2 local : hypothèse à vérifier. La pluie va avec des particules plus faibles, compatible avec un lessivage. Corrélation ≠ causalité : température, vent et pluie varient aussi avec le cycle quotidien.
 
 ### Q2 — Mouvements de vélos selon la pluie et la température
 - **Méthode** : indice de mouvements relatif à la même ville et à la même tranche de journée ; boxplots pluie / pas de pluie et par tranche de température.
