@@ -1,0 +1,1778 @@
+<!DOCTYPE html>
+<html>
+<head>
+    
+    <meta http-equiv="content-type" content="text/html; charset=UTF-8" />
+    <script src="https://cdn.jsdelivr.net/npm/leaflet@1.9.4/dist/leaflet.js"></script>
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.2/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Leaflet.awesome-markers/2.0.2/leaflet.awesome-markers.js"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/leaflet@1.9.4/dist/leaflet.css"/>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.2/dist/css/bootstrap.min.css"/>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.2.0/css/all.min.css"/>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/Leaflet.awesome-markers/2.0.2/leaflet.awesome-markers.css"/>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/python-visualization/folium/folium/templates/leaflet.awesome.rotate.min.css"/>
+    
+            <meta name="viewport" content="width=device-width,
+                initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+            <style>
+                #map_ba70a40f5d9099d747450c05a33f6bf7 {
+                    position: relative;
+                    width: 100.0vw;
+                    height: 100.0vh;
+
+                    left: 0.0%;
+                    top: 0.0%;
+                }
+                .leaflet-container { font-size: 1rem; }
+            </style>
+
+            <style>html, body {
+                width: 100%;
+                height: 100%;
+                margin: 0;
+                padding: 0;
+            }
+            </style>
+
+            <style>/*
+ * Glyphicons Halflings -- the icon font used by folium's default Awesome Markers
+ * (Icon(prefix="glyphicon")). Extracted from Bootstrap 3's glyphicon rules only.
+ *
+ * folium previously loaded netdna's bootstrap-glyphicons.css, which despite its
+ * name ships a full Bootstrap-3 base stylesheet (normalize reset + global `body`
+ * rules) that leaked onto the host page (GH-1820). This file provides just the
+ * @font-face and .glyphicon/.glyphicon-* rules needed for the markers, with no
+ * page-wide side effects. Font files are served from jsDelivr.
+ */
+@font-face{font-family:'Glyphicons Halflings';src:url('https://cdn.jsdelivr.net/npm/bootstrap@3.3.7/fonts/glyphicons-halflings-regular.eot');src:url('https://cdn.jsdelivr.net/npm/bootstrap@3.3.7/fonts/glyphicons-halflings-regular.eot?#iefix') format('embedded-opentype'),url('https://cdn.jsdelivr.net/npm/bootstrap@3.3.7/fonts/glyphicons-halflings-regular.woff') format('woff'),url('https://cdn.jsdelivr.net/npm/bootstrap@3.3.7/fonts/glyphicons-halflings-regular.ttf') format('truetype'),url('https://cdn.jsdelivr.net/npm/bootstrap@3.3.7/fonts/glyphicons-halflings-regular.svg#glyphicons-halflingsregular') format('svg');}.glyphicon{position:relative;top:1px;display:inline-block;font-family:'Glyphicons Halflings';font-style:normal;font-weight:normal;line-height:1;-webkit-font-smoothing:antialiased;}
+.glyphicon-asterisk:before{content:"\2a";}
+.glyphicon-plus:before{content:"\2b";}
+.glyphicon-euro:before{content:"\20ac";}
+.glyphicon-minus:before{content:"\2212";}
+.glyphicon-cloud:before{content:"\2601";}
+.glyphicon-envelope:before{content:"\2709";}
+.glyphicon-pencil:before{content:"\270f";}
+.glyphicon-glass:before{content:"\e001";}
+.glyphicon-music:before{content:"\e002";}
+.glyphicon-search:before{content:"\e003";}
+.glyphicon-heart:before{content:"\e005";}
+.glyphicon-star:before{content:"\e006";}
+.glyphicon-star-empty:before{content:"\e007";}
+.glyphicon-user:before{content:"\e008";}
+.glyphicon-film:before{content:"\e009";}
+.glyphicon-th-large:before{content:"\e010";}
+.glyphicon-th:before{content:"\e011";}
+.glyphicon-th-list:before{content:"\e012";}
+.glyphicon-ok:before{content:"\e013";}
+.glyphicon-remove:before{content:"\e014";}
+.glyphicon-zoom-in:before{content:"\e015";}
+.glyphicon-zoom-out:before{content:"\e016";}
+.glyphicon-off:before{content:"\e017";}
+.glyphicon-signal:before{content:"\e018";}
+.glyphicon-cog:before{content:"\e019";}
+.glyphicon-trash:before{content:"\e020";}
+.glyphicon-home:before{content:"\e021";}
+.glyphicon-file:before{content:"\e022";}
+.glyphicon-time:before{content:"\e023";}
+.glyphicon-road:before{content:"\e024";}
+.glyphicon-download-alt:before{content:"\e025";}
+.glyphicon-download:before{content:"\e026";}
+.glyphicon-upload:before{content:"\e027";}
+.glyphicon-inbox:before{content:"\e028";}
+.glyphicon-play-circle:before{content:"\e029";}
+.glyphicon-repeat:before{content:"\e030";}
+.glyphicon-refresh:before{content:"\e031";}
+.glyphicon-list-alt:before{content:"\e032";}
+.glyphicon-flag:before{content:"\e034";}
+.glyphicon-headphones:before{content:"\e035";}
+.glyphicon-volume-off:before{content:"\e036";}
+.glyphicon-volume-down:before{content:"\e037";}
+.glyphicon-volume-up:before{content:"\e038";}
+.glyphicon-qrcode:before{content:"\e039";}
+.glyphicon-barcode:before{content:"\e040";}
+.glyphicon-tag:before{content:"\e041";}
+.glyphicon-tags:before{content:"\e042";}
+.glyphicon-book:before{content:"\e043";}
+.glyphicon-print:before{content:"\e045";}
+.glyphicon-font:before{content:"\e047";}
+.glyphicon-bold:before{content:"\e048";}
+.glyphicon-italic:before{content:"\e049";}
+.glyphicon-text-height:before{content:"\e050";}
+.glyphicon-text-width:before{content:"\e051";}
+.glyphicon-align-left:before{content:"\e052";}
+.glyphicon-align-center:before{content:"\e053";}
+.glyphicon-align-right:before{content:"\e054";}
+.glyphicon-align-justify:before{content:"\e055";}
+.glyphicon-list:before{content:"\e056";}
+.glyphicon-indent-left:before{content:"\e057";}
+.glyphicon-indent-right:before{content:"\e058";}
+.glyphicon-facetime-video:before{content:"\e059";}
+.glyphicon-picture:before{content:"\e060";}
+.glyphicon-map-marker:before{content:"\e062";}
+.glyphicon-adjust:before{content:"\e063";}
+.glyphicon-tint:before{content:"\e064";}
+.glyphicon-edit:before{content:"\e065";}
+.glyphicon-share:before{content:"\e066";}
+.glyphicon-check:before{content:"\e067";}
+.glyphicon-move:before{content:"\e068";}
+.glyphicon-step-backward:before{content:"\e069";}
+.glyphicon-fast-backward:before{content:"\e070";}
+.glyphicon-backward:before{content:"\e071";}
+.glyphicon-play:before{content:"\e072";}
+.glyphicon-pause:before{content:"\e073";}
+.glyphicon-stop:before{content:"\e074";}
+.glyphicon-forward:before{content:"\e075";}
+.glyphicon-fast-forward:before{content:"\e076";}
+.glyphicon-step-forward:before{content:"\e077";}
+.glyphicon-eject:before{content:"\e078";}
+.glyphicon-chevron-left:before{content:"\e079";}
+.glyphicon-chevron-right:before{content:"\e080";}
+.glyphicon-plus-sign:before{content:"\e081";}
+.glyphicon-minus-sign:before{content:"\e082";}
+.glyphicon-remove-sign:before{content:"\e083";}
+.glyphicon-ok-sign:before{content:"\e084";}
+.glyphicon-question-sign:before{content:"\e085";}
+.glyphicon-info-sign:before{content:"\e086";}
+.glyphicon-screenshot:before{content:"\e087";}
+.glyphicon-remove-circle:before{content:"\e088";}
+.glyphicon-ok-circle:before{content:"\e089";}
+.glyphicon-ban-circle:before{content:"\e090";}
+.glyphicon-arrow-left:before{content:"\e091";}
+.glyphicon-arrow-right:before{content:"\e092";}
+.glyphicon-arrow-up:before{content:"\e093";}
+.glyphicon-arrow-down:before{content:"\e094";}
+.glyphicon-share-alt:before{content:"\e095";}
+.glyphicon-resize-full:before{content:"\e096";}
+.glyphicon-resize-small:before{content:"\e097";}
+.glyphicon-exclamation-sign:before{content:"\e101";}
+.glyphicon-gift:before{content:"\e102";}
+.glyphicon-leaf:before{content:"\e103";}
+.glyphicon-eye-open:before{content:"\e105";}
+.glyphicon-eye-close:before{content:"\e106";}
+.glyphicon-warning-sign:before{content:"\e107";}
+.glyphicon-plane:before{content:"\e108";}
+.glyphicon-random:before{content:"\e110";}
+.glyphicon-comment:before{content:"\e111";}
+.glyphicon-magnet:before{content:"\e112";}
+.glyphicon-chevron-up:before{content:"\e113";}
+.glyphicon-chevron-down:before{content:"\e114";}
+.glyphicon-retweet:before{content:"\e115";}
+.glyphicon-shopping-cart:before{content:"\e116";}
+.glyphicon-folder-close:before{content:"\e117";}
+.glyphicon-folder-open:before{content:"\e118";}
+.glyphicon-resize-vertical:before{content:"\e119";}
+.glyphicon-resize-horizontal:before{content:"\e120";}
+.glyphicon-hdd:before{content:"\e121";}
+.glyphicon-bullhorn:before{content:"\e122";}
+.glyphicon-certificate:before{content:"\e124";}
+.glyphicon-thumbs-up:before{content:"\e125";}
+.glyphicon-thumbs-down:before{content:"\e126";}
+.glyphicon-hand-right:before{content:"\e127";}
+.glyphicon-hand-left:before{content:"\e128";}
+.glyphicon-hand-up:before{content:"\e129";}
+.glyphicon-hand-down:before{content:"\e130";}
+.glyphicon-circle-arrow-right:before{content:"\e131";}
+.glyphicon-circle-arrow-left:before{content:"\e132";}
+.glyphicon-circle-arrow-up:before{content:"\e133";}
+.glyphicon-circle-arrow-down:before{content:"\e134";}
+.glyphicon-globe:before{content:"\e135";}
+.glyphicon-tasks:before{content:"\e137";}
+.glyphicon-filter:before{content:"\e138";}
+.glyphicon-fullscreen:before{content:"\e140";}
+.glyphicon-dashboard:before{content:"\e141";}
+.glyphicon-heart-empty:before{content:"\e143";}
+.glyphicon-link:before{content:"\e144";}
+.glyphicon-phone:before{content:"\e145";}
+.glyphicon-usd:before{content:"\e148";}
+.glyphicon-gbp:before{content:"\e149";}
+.glyphicon-sort:before{content:"\e150";}
+.glyphicon-sort-by-alphabet:before{content:"\e151";}
+.glyphicon-sort-by-alphabet-alt:before{content:"\e152";}
+.glyphicon-sort-by-order:before{content:"\e153";}
+.glyphicon-sort-by-order-alt:before{content:"\e154";}
+.glyphicon-sort-by-attributes:before{content:"\e155";}
+.glyphicon-sort-by-attributes-alt:before{content:"\e156";}
+.glyphicon-unchecked:before{content:"\e157";}
+.glyphicon-expand:before{content:"\e158";}
+.glyphicon-collapse-down:before{content:"\e159";}
+.glyphicon-collapse-up:before{content:"\e160";}
+.glyphicon-log-in:before{content:"\e161";}
+.glyphicon-flash:before{content:"\e162";}
+.glyphicon-log-out:before{content:"\e163";}
+.glyphicon-new-window:before{content:"\e164";}
+.glyphicon-record:before{content:"\e165";}
+.glyphicon-save:before{content:"\e166";}
+.glyphicon-open:before{content:"\e167";}
+.glyphicon-saved:before{content:"\e168";}
+.glyphicon-import:before{content:"\e169";}
+.glyphicon-export:before{content:"\e170";}
+.glyphicon-send:before{content:"\e171";}
+.glyphicon-floppy-disk:before{content:"\e172";}
+.glyphicon-floppy-saved:before{content:"\e173";}
+.glyphicon-floppy-remove:before{content:"\e174";}
+.glyphicon-floppy-save:before{content:"\e175";}
+.glyphicon-floppy-open:before{content:"\e176";}
+.glyphicon-credit-card:before{content:"\e177";}
+.glyphicon-transfer:before{content:"\e178";}
+.glyphicon-cutlery:before{content:"\e179";}
+.glyphicon-header:before{content:"\e180";}
+.glyphicon-compressed:before{content:"\e181";}
+.glyphicon-earphone:before{content:"\e182";}
+.glyphicon-phone-alt:before{content:"\e183";}
+.glyphicon-tower:before{content:"\e184";}
+.glyphicon-stats:before{content:"\e185";}
+.glyphicon-sd-video:before{content:"\e186";}
+.glyphicon-hd-video:before{content:"\e187";}
+.glyphicon-subtitles:before{content:"\e188";}
+.glyphicon-sound-stereo:before{content:"\e189";}
+.glyphicon-sound-dolby:before{content:"\e190";}
+.glyphicon-sound-5-1:before{content:"\e191";}
+.glyphicon-sound-6-1:before{content:"\e192";}
+.glyphicon-sound-7-1:before{content:"\e193";}
+.glyphicon-copyright-mark:before{content:"\e194";}
+.glyphicon-registration-mark:before{content:"\e195";}
+.glyphicon-cloud-download:before{content:"\e197";}
+.glyphicon-cloud-upload:before{content:"\e198";}
+.glyphicon-tree-conifer:before{content:"\e199";}
+.glyphicon-tree-deciduous:before{content:"\e200";}
+.glyphicon-briefcase:before{content:"\1f4bc";}
+.glyphicon-calendar:before{content:"\1f4c5";}
+.glyphicon-pushpin:before{content:"\1f4cc";}
+.glyphicon-paperclip:before{content:"\1f4ce";}
+.glyphicon-camera:before{content:"\1f4f7";}
+.glyphicon-lock:before{content:"\1f512";}
+.glyphicon-bell:before{content:"\1f514";}
+.glyphicon-bookmark:before{content:"\1f516";}
+.glyphicon-fire:before{content:"\1f525";}
+.glyphicon-wrench:before{content:"\1f527";}
+</style>
+
+            <script>
+                L_NO_TOUCH = false;
+                L_DISABLE_3D = false;
+            </script>
+
+        
+</head>
+<body>
+    
+    <div style='position:fixed;bottom:20px;left:20px;z-index:999;background:white;padding:8px 12px;border-radius:6px;font:13px sans-serif'><b>Ratio OMS moyen</b><br><span style='color:#639922'>●</span> &lt; 0,7<br><span style='color:#EF9F27'>●</span> 0,7 – 1<br><span style='color:#E24B4A'>●</span> &ge; 1 (au-dessus du seuil)</div>
+    
+            <div class="folium-map" id="map_ba70a40f5d9099d747450c05a33f6bf7" ></div>
+        
+</body>
+<script>
+    
+    
+            var map_ba70a40f5d9099d747450c05a33f6bf7 = L.map(
+                "map_ba70a40f5d9099d747450c05a33f6bf7",
+                {
+                    center: [46.6, 2.4],
+                    crs: L.CRS.EPSG3857,
+                    ...{
+  "zoom": 6,
+  "zoomControl": true,
+  "preferCanvas": false,
+}
+
+                }
+            );
+
+            
+
+        
+    
+            var tile_layer_3f367ff19d834ded5e2bda49dd670533 = L.tileLayer(
+                "https://tile.openstreetmap.org/{z}/{x}/{y}.png",
+                {
+  "minZoom": 0,
+  "maxZoom": 19,
+  "maxNativeZoom": 19,
+  "noWrap": false,
+  "attribution": "\u0026copy; \u003ca href=\"https://www.openstreetmap.org/copyright\"\u003eOpenStreetMap\u003c/a\u003e contributors",
+  "subdomains": "abc",
+  "detectRetina": false,
+  "tms": false,
+  "opacity": 1,
+}
+
+            );
+        
+    
+            tile_layer_3f367ff19d834ded5e2bda49dd670533.addTo(map_ba70a40f5d9099d747450c05a33f6bf7);
+        
+    
+            var circle_marker_9c78ccf4e447458f9c6f14df79ca8d2a = L.circleMarker(
+                [45.774819999808635, 4.898572000411539],
+                {"bubblingMouseEvents": true, "color": "#444", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#639922", "fillOpacity": 0.8, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 5.821079409267346, "stroke": true, "weight": 0.5}
+            ).addTo(map_ba70a40f5d9099d747450c05a33f6bf7);
+        
+    
+            circle_marker_9c78ccf4e447458f9c6f14df79ca8d2a.bindTooltip(
+                `<div>
+                     Lyon Périphérique (Lyon) – ratio OMS 0.61
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_2a08e3f7c0f6b02fb30234540ea08534 = L.circleMarker(
+                [48.8702740002815, 2.332500000221789],
+                {"bubblingMouseEvents": true, "color": "#444", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#EF9F27", "fillOpacity": 0.8, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 6.403332163742689, "stroke": true, "weight": 0.5}
+            ).addTo(map_ba70a40f5d9099d747450c05a33f6bf7);
+        
+    
+            circle_marker_2a08e3f7c0f6b02fb30234540ea08534.bindTooltip(
+                `<div>
+                     Place de l'Opéra (Paris) – ratio OMS 0.80
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_92a518a6a5479ddb76feeda8ce9876f0 = L.circleMarker(
+                [45.757731999933235, 4.854214000165473],
+                {"bubblingMouseEvents": true, "color": "#444", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#639922", "fillOpacity": 0.8, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 5.532730255187124, "stroke": true, "weight": 0.5}
+            ).addTo(map_ba70a40f5d9099d747450c05a33f6bf7);
+        
+    
+            circle_marker_92a518a6a5479ddb76feeda8ce9876f0.bindTooltip(
+                `<div>
+                     LYON Centre (Lyon) – ratio OMS 0.51
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_67f09f14bb2c19840ea7e6e9c1d610f5 = L.circleMarker(
+                [48.578177999862866, 7.802316999571487],
+                {"bubblingMouseEvents": true, "color": "#444", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#639922", "fillOpacity": 0.8, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 5.4883775596976365, "stroke": true, "weight": 0.5}
+            ).addTo(map_ba70a40f5d9099d747450c05a33f6bf7);
+        
+    
+            circle_marker_67f09f14bb2c19840ea7e6e9c1d610f5.bindTooltip(
+                `<div>
+                     Kehl (Strasbourg) – ratio OMS 0.50
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_558df238f649b9e67ad99eed6f396cae = L.circleMarker(
+                [45.720024000044454, 4.818156000156704],
+                {"bubblingMouseEvents": true, "color": "#444", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#EF9F27", "fillOpacity": 0.8, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 6.29488441405398, "stroke": true, "weight": 0.5}
+            ).addTo(map_ba70a40f5d9099d747450c05a33f6bf7);
+        
+    
+            circle_marker_558df238f649b9e67ad99eed6f396cae.bindTooltip(
+                `<div>
+                     A7 SUD LYONNAIS (Lyon) – ratio OMS 0.76
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_42c7e2f0b7404ec172a3acc751c5cc94 = L.circleMarker(
+                [43.62360800014131, 1.4385309999071265],
+                {"bubblingMouseEvents": true, "color": "#444", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#639922", "fillOpacity": 0.8, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 5.4201179526356, "stroke": true, "weight": 0.5}
+            ).addTo(map_ba70a40f5d9099d747450c05a33f6bf7);
+        
+    
+            circle_marker_42c7e2f0b7404ec172a3acc751c5cc94.bindTooltip(
+                `<div>
+                     Toulouse Mazades (Toulouse) – ratio OMS 0.47
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_b753ea0848870ef8998f71b7d994d8e0 = L.circleMarker(
+                [50.70653500003718, 3.1806600001209713],
+                {"bubblingMouseEvents": true, "color": "#444", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#EF9F27", "fillOpacity": 0.8, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 6.532504314461445, "stroke": true, "weight": 0.5}
+            ).addTo(map_ba70a40f5d9099d747450c05a33f6bf7);
+        
+    
+            circle_marker_b753ea0848870ef8998f71b7d994d8e0.bindTooltip(
+                `<div>
+                     Roubaix Serres (Lille) – ratio OMS 0.84
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_e82ccc4a1791c57c382974578a7f044a = L.circleMarker(
+                [45.73529000012643, 4.829793999852605],
+                {"bubblingMouseEvents": true, "color": "#444", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#639922", "fillOpacity": 0.8, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 5.427344427634896, "stroke": true, "weight": 0.5}
+            ).addTo(map_ba70a40f5d9099d747450c05a33f6bf7);
+        
+    
+            circle_marker_e82ccc4a1791c57c382974578a7f044a.bindTooltip(
+                `<div>
+                     GERLAND (Lyon) – ratio OMS 0.48
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_1e7cc16fdfc520d6a588196623fb9c6b = L.circleMarker(
+                [45.77889999997353, 4.924699999913453],
+                {"bubblingMouseEvents": true, "color": "#444", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#639922", "fillOpacity": 0.8, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 5.463586612949616, "stroke": true, "weight": 0.5}
+            ).addTo(map_ba70a40f5d9099d747450c05a33f6bf7);
+        
+    
+            circle_marker_1e7cc16fdfc520d6a588196623fb9c6b.bindTooltip(
+                `<div>
+                     VAULX EN VELIN (Lyon) – ratio OMS 0.49
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_bb3aceeb1b536a18861bba25ea754dba = L.circleMarker(
+                [45.82322300029394, 4.953958000258141],
+                {"bubblingMouseEvents": true, "color": "#444", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#639922", "fillOpacity": 0.8, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 5.067081611075263, "stroke": true, "weight": 0.5}
+            ).addTo(map_ba70a40f5d9099d747450c05a33f6bf7);
+        
+    
+            circle_marker_bb3aceeb1b536a18861bba25ea754dba.bindTooltip(
+                `<div>
+                     COTIERE AIN (Lyon) – ratio OMS 0.36
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_ee770a4a5094f81f2fcb5eeec69f5a2d = L.circleMarker(
+                [48.51570000023524, 7.687819000082164],
+                {"bubblingMouseEvents": true, "color": "#444", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#639922", "fillOpacity": 0.8, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 5.121023109243698, "stroke": true, "weight": 0.5}
+            ).addTo(map_ba70a40f5d9099d747450c05a33f6bf7);
+        
+    
+            circle_marker_ee770a4a5094f81f2fcb5eeec69f5a2d.bindTooltip(
+                `<div>
+                     Strasbourg Sud 2 (Strasbourg) – ratio OMS 0.37
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_e3cb4bba05b8b1d800830db0b042dd30 = L.circleMarker(
+                [48.610363000093216, 7.781631000348977],
+                {"bubblingMouseEvents": true, "color": "#444", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#639922", "fillOpacity": 0.8, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 5.4039345862650485, "stroke": true, "weight": 0.5}
+            ).addTo(map_ba70a40f5d9099d747450c05a33f6bf7);
+        
+    
+            circle_marker_e3cb4bba05b8b1d800830db0b042dd30.bindTooltip(
+                `<div>
+                     Strasbourg Nord (Strasbourg) – ratio OMS 0.47
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_28087ba707032493f0dc7618eb3e1ddf = L.circleMarker(
+                [48.590429999772034, 7.744983000336326],
+                {"bubblingMouseEvents": true, "color": "#444", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#639922", "fillOpacity": 0.8, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 5.802591792030698, "stroke": true, "weight": 0.5}
+            ).addTo(map_ba70a40f5d9099d747450c05a33f6bf7);
+        
+    
+            circle_marker_28087ba707032493f0dc7618eb3e1ddf.bindTooltip(
+                `<div>
+                     Strasbourg Clemenceau (Strasbourg) – ratio OMS 0.60
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_46210071770311247e80beeaa1bac552 = L.circleMarker(
+                [45.66389999989408, 4.845899999684472],
+                {"bubblingMouseEvents": true, "color": "#444", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#639922", "fillOpacity": 0.8, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 5.008161434977579, "stroke": true, "weight": 0.5}
+            ).addTo(map_ba70a40f5d9099d747450c05a33f6bf7);
+        
+    
+            circle_marker_46210071770311247e80beeaa1bac552.bindTooltip(
+                `<div>
+                     FEYZIN STADE (Lyon) – ratio OMS 0.34
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_03d69bb7100ad9a66860bdfac180a396 = L.circleMarker(
+                [47.14608800004491, -1.6902690001468232],
+                {"bubblingMouseEvents": true, "color": "#444", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#639922", "fillOpacity": 0.8, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 5.414693820224719, "stroke": true, "weight": 0.5}
+            ).addTo(map_ba70a40f5d9099d747450c05a33f6bf7);
+        
+    
+            circle_marker_03d69bb7100ad9a66860bdfac180a396.bindTooltip(
+                `<div>
+                     EPINETTES (Nantes) – ratio OMS 0.47
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_8c68fe54f2c14bae9dfe4b51228dbd8a = L.circleMarker(
+                [50.775481999826525, 3.1256800001552354],
+                {"bubblingMouseEvents": true, "color": "#444", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#639922", "fillOpacity": 0.8, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 5.5920864374688595, "stroke": true, "weight": 0.5}
+            ).addTo(map_ba70a40f5d9099d747450c05a33f6bf7);
+        
+    
+            circle_marker_8c68fe54f2c14bae9dfe4b51228dbd8a.bindTooltip(
+                `<div>
+                     Halluin stade (Lille) – ratio OMS 0.53
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_1bd36cc409d35dcb1b48e3237509d31d = L.circleMarker(
+                [50.59774000018877, 3.049460000049802],
+                {"bubblingMouseEvents": true, "color": "#444", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#639922", "fillOpacity": 0.8, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 5.5853865307357875, "stroke": true, "weight": 0.5}
+            ).addTo(map_ba70a40f5d9099d747450c05a33f6bf7);
+        
+    
+            circle_marker_1bd36cc409d35dcb1b48e3237509d31d.bindTooltip(
+                `<div>
+                     Wattignies (Lille) – ratio OMS 0.53
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_9237b1a898f8c10d2292bdb86258f76f = L.circleMarker(
+                [48.891665999897555, 2.346666999987613],
+                {"bubblingMouseEvents": true, "color": "#444", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#639922", "fillOpacity": 0.8, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 5.787967548402056, "stroke": true, "weight": 0.5}
+            ).addTo(map_ba70a40f5d9099d747450c05a33f6bf7);
+        
+    
+            circle_marker_9237b1a898f8c10d2292bdb86258f76f.bindTooltip(
+                `<div>
+                     PARIS 18eme (Paris) – ratio OMS 0.60
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_0b9830905cc8d25ce93bfbfa2c8269c2 = L.circleMarker(
+                [48.83861500018727, 2.4127809998590957],
+                {"bubblingMouseEvents": true, "color": "#444", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#EF9F27", "fillOpacity": 0.8, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 6.847091979743903, "stroke": true, "weight": 0.5}
+            ).addTo(map_ba70a40f5d9099d747450c05a33f6bf7);
+        
+    
+            circle_marker_0b9830905cc8d25ce93bfbfa2c8269c2.bindTooltip(
+                `<div>
+                     Bld peripherique Est (Paris) – ratio OMS 0.95
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_8407408f2c6f582f22153a49e57abb09 = L.circleMarker(
+                [48.99083000013072, 2.4447220002594934],
+                {"bubblingMouseEvents": true, "color": "#444", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#639922", "fillOpacity": 0.8, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 5.923924346573369, "stroke": true, "weight": 0.5}
+            ).addTo(map_ba70a40f5d9099d747450c05a33f6bf7);
+        
+    
+            circle_marker_8407408f2c6f582f22153a49e57abb09.bindTooltip(
+                `<div>
+                     GONESSE (Paris) – ratio OMS 0.64
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_d506314a162e9185880728399f4528a3 = L.circleMarker(
+                [48.830386999745706, 2.2698889996653513],
+                {"bubblingMouseEvents": true, "color": "#444", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#639922", "fillOpacity": 0.8, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 5.616038404726735, "stroke": true, "weight": 0.5}
+            ).addTo(map_ba70a40f5d9099d747450c05a33f6bf7);
+        
+    
+            circle_marker_d506314a162e9185880728399f4528a3.bindTooltip(
+                `<div>
+                     PARIS Stade Lenglen (Paris) – ratio OMS 0.54
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_c9f229998ffed9d9d8a486758ca6a934 = L.circleMarker(
+                [48.92527799982875, 2.356666999916352],
+                {"bubblingMouseEvents": true, "color": "#444", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#E24B4A", "fillOpacity": 0.8, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 7.302118017190239, "stroke": true, "weight": 0.5}
+            ).addTo(map_ba70a40f5d9099d747450c05a33f6bf7);
+        
+    
+            circle_marker_c9f229998ffed9d9d8a486758ca6a934.bindTooltip(
+                `<div>
+                     Auto A1 -Saint-Denis (Paris) – ratio OMS 1.10
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_fc82df916ab21a66fa063524fabe0f22 = L.circleMarker(
+                [48.9025040001429, 2.452500000264972],
+                {"bubblingMouseEvents": true, "color": "#444", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#EF9F27", "fillOpacity": 0.8, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 6.106515700137988, "stroke": true, "weight": 0.5}
+            ).addTo(map_ba70a40f5d9099d747450c05a33f6bf7);
+        
+    
+            circle_marker_fc82df916ab21a66fa063524fabe0f22.bindTooltip(
+                `<div>
+                     BOBIGNY (Paris) – ratio OMS 0.70
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_82b63f6a307c1aa023e172b1b0440aeb = L.circleMarker(
+                [48.82777799979369, 2.327499999808262],
+                {"bubblingMouseEvents": true, "color": "#444", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#EF9F27", "fillOpacity": 0.8, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 6.3801357425822625, "stroke": true, "weight": 0.5}
+            ).addTo(map_ba70a40f5d9099d747450c05a33f6bf7);
+        
+    
+            circle_marker_82b63f6a307c1aa023e172b1b0440aeb.bindTooltip(
+                `<div>
+                     Place Victor Basch (Paris) – ratio OMS 0.79
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_147cbc98ca7b364abed7ba229c418064 = L.circleMarker(
+                [48.87333300000442, 2.3302780002985286],
+                {"bubblingMouseEvents": true, "color": "#444", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#EF9F27", "fillOpacity": 0.8, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 6.140266703845571, "stroke": true, "weight": 0.5}
+            ).addTo(map_ba70a40f5d9099d747450c05a33f6bf7);
+        
+    
+            circle_marker_147cbc98ca7b364abed7ba229c418064.bindTooltip(
+                `<div>
+                     Boulevard Haussmann (Paris) – ratio OMS 0.71
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_2191ccc4230de5bc50c0cc18093bd6b8 = L.circleMarker(
+                [48.8913880002415, 2.2405559998759084],
+                {"bubblingMouseEvents": true, "color": "#444", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#EF9F27", "fillOpacity": 0.8, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 6.377265223357486, "stroke": true, "weight": 0.5}
+            ).addTo(map_ba70a40f5d9099d747450c05a33f6bf7);
+        
+    
+            circle_marker_2191ccc4230de5bc50c0cc18093bd6b8.bindTooltip(
+                `<div>
+                     LA DEFENSE (Paris) – ratio OMS 0.79
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_ac0dee033e7df918824e3793a2eff310 = L.circleMarker(
+                [48.8405569997725, 2.484444000140104],
+                {"bubblingMouseEvents": true, "color": "#444", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#639922", "fillOpacity": 0.8, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 5.073933933933934, "stroke": true, "weight": 0.5}
+            ).addTo(map_ba70a40f5d9099d747450c05a33f6bf7);
+        
+    
+            circle_marker_ac0dee033e7df918824e3793a2eff310.bindTooltip(
+                `<div>
+                     NOGENT-SUR-MARNE (Paris) – ratio OMS 0.36
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_624b200b1ed2ad676eaedfbc834cf8bd = L.circleMarker(
+                [48.95138999983726, 2.223610999619816],
+                {"bubblingMouseEvents": true, "color": "#444", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#EF9F27", "fillOpacity": 0.8, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 6.285898617511521, "stroke": true, "weight": 0.5}
+            ).addTo(map_ba70a40f5d9099d747450c05a33f6bf7);
+        
+    
+            circle_marker_624b200b1ed2ad676eaedfbc834cf8bd.bindTooltip(
+                `<div>
+                     ARGENTEUIL (Paris) – ratio OMS 0.76
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_6301520105327d61415ddeaf8c6eee12 = L.circleMarker(
+                [48.775898000042204, 2.37578800006495],
+                {"bubblingMouseEvents": true, "color": "#444", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#639922", "fillOpacity": 0.8, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 5.679940176518802, "stroke": true, "weight": 0.5}
+            ).addTo(map_ba70a40f5d9099d747450c05a33f6bf7);
+        
+    
+            circle_marker_6301520105327d61415ddeaf8c6eee12.bindTooltip(
+                `<div>
+                     VITRY-SUR-SEINE (Paris) – ratio OMS 0.56
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_dc363787ddf0b0b2bff0c2d97c29a215 = L.circleMarker(
+                [48.903899999756625, 2.384700000047436],
+                {"bubblingMouseEvents": true, "color": "#444", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#EF9F27", "fillOpacity": 0.8, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 6.893582222222222, "stroke": true, "weight": 0.5}
+            ).addTo(map_ba70a40f5d9099d747450c05a33f6bf7);
+        
+    
+            circle_marker_dc363787ddf0b0b2bff0c2d97c29a215.bindTooltip(
+                `<div>
+                     AUBERVILLIERS (Paris) – ratio OMS 0.96
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_a805fa634772e60a3bade96cb053c8c5 = L.circleMarker(
+                [48.852779999795274, 2.3605559999190917],
+                {"bubblingMouseEvents": true, "color": "#444", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#EF9F27", "fillOpacity": 0.8, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 6.926456883509834, "stroke": true, "weight": 0.5}
+            ).addTo(map_ba70a40f5d9099d747450c05a33f6bf7);
+        
+    
+            circle_marker_a805fa634772e60a3bade96cb053c8c5.bindTooltip(
+                `<div>
+                     Quai des Celestins (Paris) – ratio OMS 0.98
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_255e5a5d340521149a7d54eba4774592 = L.circleMarker(
+                [48.83722300009815, 2.39389999991001],
+                {"bubblingMouseEvents": true, "color": "#444", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#EF9F27", "fillOpacity": 0.8, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 6.5723136094674555, "stroke": true, "weight": 0.5}
+            ).addTo(map_ba70a40f5d9099d747450c05a33f6bf7);
+        
+    
+            circle_marker_255e5a5d340521149a7d54eba4774592.bindTooltip(
+                `<div>
+                     PARIS 12eme (Paris) – ratio OMS 0.86
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_26d5dbce7b39cb7f507207f7303801dd = L.circleMarker(
+                [48.93722000025856, 2.3616670003298794],
+                {"bubblingMouseEvents": true, "color": "#444", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#EF9F27", "fillOpacity": 0.8, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 6.773102222222223, "stroke": true, "weight": 0.5}
+            ).addTo(map_ba70a40f5d9099d747450c05a33f6bf7);
+        
+    
+            circle_marker_26d5dbce7b39cb7f507207f7303801dd.bindTooltip(
+                `<div>
+                     SAINT-DENIS (Paris) – ratio OMS 0.92
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_aca0293a2ecaf47b3001d8d779853f9b = L.circleMarker(
+                [48.85719999977259, 2.2932999996746815],
+                {"bubblingMouseEvents": true, "color": "#444", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#EF9F27", "fillOpacity": 0.8, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 6.434879227053139, "stroke": true, "weight": 0.5}
+            ).addTo(map_ba70a40f5d9099d747450c05a33f6bf7);
+        
+    
+            circle_marker_aca0293a2ecaf47b3001d8d779853f9b.bindTooltip(
+                `<div>
+                     PARIS 7eme (Paris) – ratio OMS 0.81
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_a91b84f35a829dcdbacc7faeb0f48cd5 = L.circleMarker(
+                [48.85638799991912, 2.3352779998137407],
+                {"bubblingMouseEvents": true, "color": "#444", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#EF9F27", "fillOpacity": 0.8, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 6.982035608308606, "stroke": true, "weight": 0.5}
+            ).addTo(map_ba70a40f5d9099d747450c05a33f6bf7);
+        
+    
+            circle_marker_a91b84f35a829dcdbacc7faeb0f48cd5.bindTooltip(
+                `<div>
+                     Rue Bonaparte (Paris) – ratio OMS 0.99
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_f122770c41728e2ac3ae2e4933bd0dad = L.circleMarker(
+                [48.706699999881124, 2.4572000002045304],
+                {"bubblingMouseEvents": true, "color": "#444", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#639922", "fillOpacity": 0.8, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 5.4268685015591664, "stroke": true, "weight": 0.5}
+            ).addTo(map_ba70a40f5d9099d747450c05a33f6bf7);
+        
+    
+            circle_marker_f122770c41728e2ac3ae2e4933bd0dad.bindTooltip(
+                `<div>
+                     MONTGERON (Paris) – ratio OMS 0.48
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_6bbc8412ae5130ba864e5510b930ab43 = L.circleMarker(
+                [48.81638700018852, 2.517500000250933],
+                {"bubblingMouseEvents": true, "color": "#444", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#639922", "fillOpacity": 0.8, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 5.628153618906943, "stroke": true, "weight": 0.5}
+            ).addTo(map_ba70a40f5d9099d747450c05a33f6bf7);
+        
+    
+            circle_marker_6bbc8412ae5130ba864e5510b930ab43.bindTooltip(
+                `<div>
+                     CHAMPIGNY-SUR-MARNE (Paris) – ratio OMS 0.54
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_02ca96a03e037fb6714ee8716853e63e = L.circleMarker(
+                [48.82861000023597, 2.3602780000847456],
+                {"bubblingMouseEvents": true, "color": "#444", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#639922", "fillOpacity": 0.8, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 5.634584165160509, "stroke": true, "weight": 0.5}
+            ).addTo(map_ba70a40f5d9099d747450c05a33f6bf7);
+        
+    
+            circle_marker_02ca96a03e037fb6714ee8716853e63e.bindTooltip(
+                `<div>
+                     PARIS 13eme (Paris) – ratio OMS 0.54
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_efaeba671f8fbbe56a2a039e68e215f7 = L.circleMarker(
+                [48.88139000002848, 2.2780559998332586],
+                {"bubblingMouseEvents": true, "color": "#444", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#639922", "fillOpacity": 0.8, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 5.87844978978979, "stroke": true, "weight": 0.5}
+            ).addTo(map_ba70a40f5d9099d747450c05a33f6bf7);
+        
+    
+            circle_marker_efaeba671f8fbbe56a2a039e68e215f7.bindTooltip(
+                `<div>
+                     NEUILLY-SUR-SEINE (Paris) – ratio OMS 0.63
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_4127f2f7ba7cfb3b8d19dbc1c950ccb4 = L.circleMarker(
+                [48.881946999811, 2.507221999589533],
+                {"bubblingMouseEvents": true, "color": "#444", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#639922", "fillOpacity": 0.8, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 5.6110529329637195, "stroke": true, "weight": 0.5}
+            ).addTo(map_ba70a40f5d9099d747450c05a33f6bf7);
+        
+    
+            circle_marker_4127f2f7ba7cfb3b8d19dbc1c950ccb4.bindTooltip(
+                `<div>
+                     VILLEMOMBLE (Paris) – ratio OMS 0.54
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_54dae27ae993252f23eab35c5564c07f = L.circleMarker(
+                [48.86211999987271, 2.344615999768577],
+                {"bubblingMouseEvents": true, "color": "#444", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#639922", "fillOpacity": 0.8, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 5.53039702445085, "stroke": true, "weight": 0.5}
+            ).addTo(map_ba70a40f5d9099d747450c05a33f6bf7);
+        
+    
+            circle_marker_54dae27ae993252f23eab35c5564c07f.bindTooltip(
+                `<div>
+                     PARIS 1er Les Halles (Paris) – ratio OMS 0.51
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_7ba37a0777ed935463f9928a2c184a26 = L.circleMarker(
+                [47.18594000021655, -1.591504000220464],
+                {"bubblingMouseEvents": true, "color": "#444", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#639922", "fillOpacity": 0.8, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 5.671910512645714, "stroke": true, "weight": 0.5}
+            ).addTo(map_ba70a40f5d9099d747450c05a33f6bf7);
+        
+    
+            circle_marker_7ba37a0777ed935463f9928a2c184a26.bindTooltip(
+                `<div>
+                     LA CHABOSSIERE (Nantes) – ratio OMS 0.56
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_469d7116ee4560f532e0929ebeeba2f8 = L.circleMarker(
+                [44.90029500003576, -0.5158349997004273],
+                {"bubblingMouseEvents": true, "color": "#444", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#639922", "fillOpacity": 0.8, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 5.352976833074042, "stroke": true, "weight": 0.5}
+            ).addTo(map_ba70a40f5d9099d747450c05a33f6bf7);
+        
+    
+            circle_marker_469d7116ee4560f532e0929ebeeba2f8.bindTooltip(
+                `<div>
+                     BASSENS (Bordeaux) – ratio OMS 0.45
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_b425ca102d3982356ce3169314007931 = L.circleMarker(
+                [44.83382400000155, -0.5985249997570591],
+                {"bubblingMouseEvents": true, "color": "#444", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#EF9F27", "fillOpacity": 0.8, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 6.322277462017292, "stroke": true, "weight": 0.5}
+            ).addTo(map_ba70a40f5d9099d747450c05a33f6bf7);
+        
+    
+            circle_marker_b425ca102d3982356ce3169314007931.bindTooltip(
+                `<div>
+                     Bordeaux_GAUTIER (Bordeaux) – ratio OMS 0.77
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_bbbe5121d0106920e5f2f4cd8eead18e = L.circleMarker(
+                [44.86120999988481, -0.5803700002542934],
+                {"bubblingMouseEvents": true, "color": "#444", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#639922", "fillOpacity": 0.8, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 5.237560286628582, "stroke": true, "weight": 0.5}
+            ).addTo(map_ba70a40f5d9099d747450c05a33f6bf7);
+        
+    
+            circle_marker_bbbe5121d0106920e5f2f4cd8eead18e.bindTooltip(
+                `<div>
+                     GRAND PARC (Bordeaux) – ratio OMS 0.41
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_99a74bb5f82b86c4ca2c10232681843e = L.circleMarker(
+                [44.80045999978738, -0.5893979996894178],
+                {"bubblingMouseEvents": true, "color": "#444", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#639922", "fillOpacity": 0.8, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 5.425008269507497, "stroke": true, "weight": 0.5}
+            ).addTo(map_ba70a40f5d9099d747450c05a33f6bf7);
+        
+    
+            circle_marker_99a74bb5f82b86c4ca2c10232681843e.bindTooltip(
+                `<div>
+                     TALENCE (Bordeaux) – ratio OMS 0.48
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_9ba05cd296f6eb46b5fbeb8593f6cede = L.circleMarker(
+                [43.643943999839024, 1.4682439996381662],
+                {"bubblingMouseEvents": true, "color": "#444", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#639922", "fillOpacity": 0.8, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 5.958290772164263, "stroke": true, "weight": 0.5}
+            ).addTo(map_ba70a40f5d9099d747450c05a33f6bf7);
+        
+    
+            circle_marker_9ba05cd296f6eb46b5fbeb8593f6cede.bindTooltip(
+                `<div>
+                     Toulouse Rte Albi (Toulouse) – ratio OMS 0.65
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_a64babf5403349f94fafa49661f00a0e = L.circleMarker(
+                [43.63347599975306, 1.3757169998594143],
+                {"bubblingMouseEvents": true, "color": "#444", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#639922", "fillOpacity": 0.8, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 5.421082433281902, "stroke": true, "weight": 0.5}
+            ).addTo(map_ba70a40f5d9099d747450c05a33f6bf7);
+        
+    
+            circle_marker_a64babf5403349f94fafa49661f00a0e.bindTooltip(
+                `<div>
+                     Toulouse - Aéroport Blagnac côté trafic (Toulouse) – ratio OMS 0.47
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_49363527a85a5f5925f4f4e46f8ce586 = L.circleMarker(
+                [43.57569499986907, 1.4180640000694156],
+                {"bubblingMouseEvents": true, "color": "#444", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#639922", "fillOpacity": 0.8, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 5.464688653575909, "stroke": true, "weight": 0.5}
+            ).addTo(map_ba70a40f5d9099d747450c05a33f6bf7);
+        
+    
+            circle_marker_49363527a85a5f5925f4f4e46f8ce586.bindTooltip(
+                `<div>
+                     Toulouse école m. Jacquier (Toulouse) – ratio OMS 0.49
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_02796c8b09de82e76ea649bd17e712fc = L.circleMarker(
+                [43.610386000052614, 1.4152000002637386],
+                {"bubblingMouseEvents": true, "color": "#444", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#EF9F27", "fillOpacity": 0.8, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 6.381361600123752, "stroke": true, "weight": 0.5}
+            ).addTo(map_ba70a40f5d9099d747450c05a33f6bf7);
+        
+    
+            circle_marker_02796c8b09de82e76ea649bd17e712fc.bindTooltip(
+                `<div>
+                     Toulouse Port de l'Embouchure (Toulouse) – ratio OMS 0.79
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_5680782242331ca0bcc9eab74e1fc674 = L.circleMarker(
+                [43.58734500001323, 1.4440030003237578],
+                {"bubblingMouseEvents": true, "color": "#444", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#639922", "fillOpacity": 0.8, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 5.267017103811222, "stroke": true, "weight": 0.5}
+            ).addTo(map_ba70a40f5d9099d747450c05a33f6bf7);
+        
+    
+            circle_marker_5680782242331ca0bcc9eab74e1fc674.bindTooltip(
+                `<div>
+                     Toulouse Berthelot (Toulouse) – ratio OMS 0.42
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_559298ad56d74e3ccee5497c22014d1a = L.circleMarker(
+                [43.556374000090166, 1.4039640002507419],
+                {"bubblingMouseEvents": true, "color": "#444", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#639922", "fillOpacity": 0.8, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 4.970748898678414, "stroke": true, "weight": 0.5}
+            ).addTo(map_ba70a40f5d9099d747450c05a33f6bf7);
+        
+    
+            circle_marker_559298ad56d74e3ccee5497c22014d1a.bindTooltip(
+                `<div>
+                     Toulouse SETMI Chapitre (Toulouse) – ratio OMS 0.32
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_43bdfcc388c0431d655784b10590bcea = L.circleMarker(
+                [43.56157999967562, 1.3932610003402177],
+                {"bubblingMouseEvents": true, "color": "#444", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#639922", "fillOpacity": 0.8, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 4.984075691411936, "stroke": true, "weight": 0.5}
+            ).addTo(map_ba70a40f5d9099d747450c05a33f6bf7);
+        
+    
+            circle_marker_43bdfcc388c0431d655784b10590bcea.bindTooltip(
+                `<div>
+                     Toulouse-SETMI Eisenhower (Toulouse) – ratio OMS 0.33
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_acaa7fb5debe385d8710c45fb99639b4 = L.circleMarker(
+                [43.45730600014825, 1.5714690002028864],
+                {"bubblingMouseEvents": true, "color": "#444", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#639922", "fillOpacity": 0.8, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 5.500289915966387, "stroke": true, "weight": 0.5}
+            ).addTo(map_ba70a40f5d9099d747450c05a33f6bf7);
+        
+    
+            circle_marker_acaa7fb5debe385d8710c45fb99639b4.bindTooltip(
+                `<div>
+                     Montgiscard SICOVAL (Toulouse) – ratio OMS 0.50
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_a96e6b4362f6d96e4fca9685c1e7b8a2 = L.circleMarker(
+                [43.41653000015981, 5.222281000005503],
+                {"bubblingMouseEvents": true, "color": "#444", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#639922", "fillOpacity": 0.8, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 5.466119471631843, "stroke": true, "weight": 0.5}
+            ).addTo(map_ba70a40f5d9099d747450c05a33f6bf7);
+        
+    
+            circle_marker_a96e6b4362f6d96e4fca9685c1e7b8a2.bindTooltip(
+                `<div>
+                     Marignane (Marseille) – ratio OMS 0.49
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_42b3eeba3f81bf3de950069c9806ccaa = L.circleMarker(
+                [43.34804999975112, 5.360119000257361],
+                {"bubblingMouseEvents": true, "color": "#444", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#639922", "fillOpacity": 0.8, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 5.740680606994325, "stroke": true, "weight": 0.5}
+            ).addTo(map_ba70a40f5d9099d747450c05a33f6bf7);
+        
+    
+            circle_marker_42b3eeba3f81bf3de950069c9806ccaa.bindTooltip(
+                `<div>
+                     MARSEILLE ST LOUIS (Marseille) – ratio OMS 0.58
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_fdee452525542179a92e4c6411e0b444 = L.circleMarker(
+                [43.305285999927285, 5.394716000050973],
+                {"bubblingMouseEvents": true, "color": "#444", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#639922", "fillOpacity": 0.8, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 5.2604546145059965, "stroke": true, "weight": 0.5}
+            ).addTo(map_ba70a40f5d9099d747450c05a33f6bf7);
+        
+    
+            circle_marker_fdee452525542179a92e4c6411e0b444.bindTooltip(
+                `<div>
+                     MARSEILLE 5 AVENUES (Marseille) – ratio OMS 0.42
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_5715c7e7b8931164952c5cefd14313d0 = L.circleMarker(
+                [43.28333999977458, 5.5113839995850205],
+                {"bubblingMouseEvents": true, "color": "#444", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#639922", "fillOpacity": 0.8, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 4.919919282511211, "stroke": true, "weight": 0.5}
+            ).addTo(map_ba70a40f5d9099d747450c05a33f6bf7);
+        
+    
+            circle_marker_5715c7e7b8931164952c5cefd14313d0.bindTooltip(
+                `<div>
+                     VALLEE HUVEAUNE (Marseille) – ratio OMS 0.31
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_dd78bf76e15a8a64ba0198a93a044a7b = L.circleMarker(
+                [45.74969499992703, 4.844389000138917],
+                {"bubblingMouseEvents": true, "color": "#444", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#639922", "fillOpacity": 0.8, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 5.94691490015361, "stroke": true, "weight": 0.5}
+            ).addTo(map_ba70a40f5d9099d747450c05a33f6bf7);
+        
+    
+            circle_marker_dd78bf76e15a8a64ba0198a93a044a7b.bindTooltip(
+                `<div>
+                     LYON TRAFIC JAURES (Lyon) – ratio OMS 0.65
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_8c26220cdb1d8d694fd2850629fe8a81 = L.circleMarker(
+                [50.73333400021155, 3.1736110000365456],
+                {"bubblingMouseEvents": true, "color": "#444", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#639922", "fillOpacity": 0.8, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 5.9697350459948, "stroke": true, "weight": 0.5}
+            ).addTo(map_ba70a40f5d9099d747450c05a33f6bf7);
+        
+    
+            circle_marker_8c26220cdb1d8d694fd2850629fe8a81.bindTooltip(
+                `<div>
+                     Tourcoing Houpline (Lille) – ratio OMS 0.66
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_0e71c250f6cb5418c3f6c898a07f9b94 = L.circleMarker(
+                [48.58805500000642, 7.729721999878151],
+                {"bubblingMouseEvents": true, "color": "#444", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#EF9F27", "fillOpacity": 0.8, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 6.5224041510709085, "stroke": true, "weight": 0.5}
+            ).addTo(map_ba70a40f5d9099d747450c05a33f6bf7);
+        
+    
+            circle_marker_0e71c250f6cb5418c3f6c898a07f9b94.bindTooltip(
+                `<div>
+                     Strasbourg A35 Remparts (Strasbourg) – ratio OMS 0.84
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_3354bf634235f553f9fcad9f3fa35242 = L.circleMarker(
+                [48.57280699986449, 7.767832999755778],
+                {"bubblingMouseEvents": true, "color": "#444", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#639922", "fillOpacity": 0.8, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 5.739458444305291, "stroke": true, "weight": 0.5}
+            ).addTo(map_ba70a40f5d9099d747450c05a33f6bf7);
+        
+    
+            circle_marker_3354bf634235f553f9fcad9f3fa35242.bindTooltip(
+                `<div>
+                     Strasbourg Neudorf Ecoquartier Danube (Strasbourg) – ratio OMS 0.58
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_e3a8d4bc71fea0b9c49484eedf9600af = L.circleMarker(
+                [43.337, 5.41166],
+                {"bubblingMouseEvents": true, "color": "#444", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#639922", "fillOpacity": 0.8, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 5.94511111111111, "stroke": true, "weight": 0.5}
+            ).addTo(map_ba70a40f5d9099d747450c05a33f6bf7);
+        
+    
+            circle_marker_e3a8d4bc71fea0b9c49484eedf9600af.bindTooltip(
+                `<div>
+                     AMU_St Jerome_roof (Marseille) – ratio OMS 0.65
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_ec781c94ba0a42a3127acd87b8f68b57 = L.circleMarker(
+                [43.33714, 5.41068],
+                {"bubblingMouseEvents": true, "color": "#444", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#639922", "fillOpacity": 0.8, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 5.845842751842752, "stroke": true, "weight": 0.5}
+            ).addTo(map_ba70a40f5d9099d747450c05a33f6bf7);
+        
+    
+            circle_marker_ec781c94ba0a42a3127acd87b8f68b57.bindTooltip(
+                `<div>
+                     AMU_St Jerome_road (Marseille) – ratio OMS 0.62
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_bbcdb5ad38223beb95e7da50e0a9c697 = L.circleMarker(
+                [43.33723, 5.41072],
+                {"bubblingMouseEvents": true, "color": "#444", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#639922", "fillOpacity": 0.8, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 5.897575308641976, "stroke": true, "weight": 0.5}
+            ).addTo(map_ba70a40f5d9099d747450c05a33f6bf7);
+        
+    
+            circle_marker_bbcdb5ad38223beb95e7da50e0a9c697.bindTooltip(
+                `<div>
+                     AMU_St Jerome_building (Marseille) – ratio OMS 0.63
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_ac973a30a6f7211dfc64f6e45c98bc53 = L.circleMarker(
+                [48.86877000026755, 2.3112309997697755],
+                {"bubblingMouseEvents": true, "color": "#444", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#EF9F27", "fillOpacity": 0.8, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 6.270667612188076, "stroke": true, "weight": 0.5}
+            ).addTo(map_ba70a40f5d9099d747450c05a33f6bf7);
+        
+    
+            circle_marker_ac973a30a6f7211dfc64f6e45c98bc53.bindTooltip(
+                `<div>
+                     Av Champs Elysees (Paris) – ratio OMS 0.76
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_4b6bc306ef8dcd93b243ee91c862175a = L.circleMarker(
+                [48.930319999881185, 2.294349999986101],
+                {"bubblingMouseEvents": true, "color": "#444", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#639922", "fillOpacity": 0.8, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 6.053209082675386, "stroke": true, "weight": 0.5}
+            ).addTo(map_ba70a40f5d9099d747450c05a33f6bf7);
+        
+    
+            circle_marker_4b6bc306ef8dcd93b243ee91c862175a.bindTooltip(
+                `<div>
+                     GENNEVILLIERS (Paris) – ratio OMS 0.68
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_1556fbea52214901749432935a1bf8e7 = L.circleMarker(
+                [44.84340999981984, -0.5069799996193494],
+                {"bubblingMouseEvents": true, "color": "#444", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#639922", "fillOpacity": 0.8, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 5.497818879290747, "stroke": true, "weight": 0.5}
+            ).addTo(map_ba70a40f5d9099d747450c05a33f6bf7);
+        
+    
+            circle_marker_1556fbea52214901749432935a1bf8e7.bindTooltip(
+                `<div>
+                     Floirac Branne (Bordeaux) – ratio OMS 0.50
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_3f75f93798b013302f877373371a5d88 = L.circleMarker(
+                [48.71928623965607, 2.243021311896426],
+                {"bubblingMouseEvents": true, "color": "#444", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#E24B4A", "fillOpacity": 0.8, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 7.19066852367688, "stroke": true, "weight": 0.5}
+            ).addTo(map_ba70a40f5d9099d747450c05a33f6bf7);
+        
+    
+            circle_marker_3f75f93798b013302f877373371a5d88.bindTooltip(
+                `<div>
+                     Palaiseau (Paris) – ratio OMS 1.06
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_3e2969019e9d7be9303db60905c85c30 = L.circleMarker(
+                [50.6111, 3.1404],
+                {"bubblingMouseEvents": true, "color": "#444", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#EF9F27", "fillOpacity": 0.8, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 6.156616541353383, "stroke": true, "weight": 0.5}
+            ).addTo(map_ba70a40f5d9099d747450c05a33f6bf7);
+        
+    
+            circle_marker_3e2969019e9d7be9303db60905c85c30.bindTooltip(
+                `<div>
+                     NASA GSFC Rutgers Calib. N18 (Lille) – ratio OMS 0.72
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_e52e3dd6e4ae7c635236c8668760c548 = L.circleMarker(
+                [50.624445, 3.105161],
+                {"bubblingMouseEvents": true, "color": "#444", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#E24B4A", "fillOpacity": 0.8, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 7.209482470784641, "stroke": true, "weight": 0.5}
+            ).addTo(map_ba70a40f5d9099d747450c05a33f6bf7);
+        
+    
+            circle_marker_e52e3dd6e4ae7c635236c8668760c548.bindTooltip(
+                `<div>
+                     Hellemmes (Lille) – ratio OMS 1.07
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_04e664d74910a064be708175843fb0a1 = L.circleMarker(
+                [48.85017, 2.27918],
+                {"bubblingMouseEvents": true, "color": "#444", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#E24B4A", "fillOpacity": 0.8, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 7.014122562674094, "stroke": true, "weight": 0.5}
+            ).addTo(map_ba70a40f5d9099d747450c05a33f6bf7);
+        
+    
+            circle_marker_04e664d74910a064be708175843fb0a1.bindTooltip(
+                `<div>
+                     Pont de Grenelle (Paris) – ratio OMS 1.00
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_8ba0d1b3a0f22c428e4fe2552d670339 = L.circleMarker(
+                [45.7053884, 4.7957488],
+                {"bubblingMouseEvents": true, "color": "#444", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#639922", "fillOpacity": 0.8, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 5.348105849582172, "stroke": true, "weight": 0.5}
+            ).addTo(map_ba70a40f5d9099d747450c05a33f6bf7);
+        
+    
+            circle_marker_8ba0d1b3a0f22c428e4fe2552d670339.bindTooltip(
+                `<div>
+                     Longchêne (Lyon) – ratio OMS 0.45
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_11590fa79813d634c920974f2c0e4ecd = L.circleMarker(
+                [48.749770294002616, 2.301734033627039],
+                {"bubblingMouseEvents": true, "color": "#444", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#EF9F27", "fillOpacity": 0.8, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 6.577660167130919, "stroke": true, "weight": 0.5}
+            ).addTo(map_ba70a40f5d9099d747450c05a33f6bf7);
+        
+    
+            circle_marker_11590fa79813d634c920974f2c0e4ecd.bindTooltip(
+                `<div>
+                     Antony (Paris) – ratio OMS 0.86
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_30f62fd2bd2ce53d1c3c41f8b9a916a4 = L.circleMarker(
+                [47.222187000266544, -1.537432000275925],
+                {"bubblingMouseEvents": true, "color": "#444", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#639922", "fillOpacity": 0.8, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 5.429614009305529, "stroke": true, "weight": 0.5}
+            ).addTo(map_ba70a40f5d9099d747450c05a33f6bf7);
+        
+    
+            circle_marker_30f62fd2bd2ce53d1c3c41f8b9a916a4.bindTooltip(
+                `<div>
+                     CIM BOUTEILLERIE (Nantes) – ratio OMS 0.48
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_54c85d95303d64fc219ae84fa488009d = L.circleMarker(
+                [47.23356000027512, -1.564810999930711],
+                {"bubblingMouseEvents": true, "color": "#444", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#639922", "fillOpacity": 0.8, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 5.65108726873503, "stroke": true, "weight": 0.5}
+            ).addTo(map_ba70a40f5d9099d747450c05a33f6bf7);
+        
+    
+            circle_marker_54c85d95303d64fc219ae84fa488009d.bindTooltip(
+                `<div>
+                     FRERES GONCOURT (Nantes) – ratio OMS 0.55
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_4433e96f8903d6b2973da2a8fda54ed4 = L.circleMarker(
+                [48.84558, 2.30883],
+                {"bubblingMouseEvents": true, "color": "#444", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#EF9F27", "fillOpacity": 0.8, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 6.66941504178273, "stroke": true, "weight": 0.5}
+            ).addTo(map_ba70a40f5d9099d747450c05a33f6bf7);
+        
+    
+            circle_marker_4433e96f8903d6b2973da2a8fda54ed4.bindTooltip(
+                `<div>
+                     80 Boulevard Garibaldi, Paris 75015 France (Paris) – ratio OMS 0.89
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_5da00e0ce77c44b45272e1548c7e72e6 = L.circleMarker(
+                [45.717131641594655, 4.754036601892964],
+                {"bubblingMouseEvents": true, "color": "#444", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#EF9F27", "fillOpacity": 0.8, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 6.6193314763231195, "stroke": true, "weight": 0.5}
+            ).addTo(map_ba70a40f5d9099d747450c05a33f6bf7);
+        
+    
+            circle_marker_5da00e0ce77c44b45272e1548c7e72e6.bindTooltip(
+                `<div>
+                     Chaponost (Lyon) – ratio OMS 0.87
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_40caa5df336e0b07f7940da37da689d5 = L.circleMarker(
+                [43.672427, 1.373581],
+                {"bubblingMouseEvents": true, "color": "#444", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#EF9F27", "fillOpacity": 0.8, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 6.737561779242174, "stroke": true, "weight": 0.5}
+            ).addTo(map_ba70a40f5d9099d747450c05a33f6bf7);
+        
+    
+            circle_marker_40caa5df336e0b07f7940da37da689d5.bindTooltip(
+                `<div>
+                     Beauzelle (Toulouse) – ratio OMS 0.91
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_815d903974b4cc8667c857a9df8a46af = L.circleMarker(
+                [45.7049337, 4.8032352],
+                {"bubblingMouseEvents": true, "color": "#444", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#E24B4A", "fillOpacity": 0.8, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 7.306963788300836, "stroke": true, "weight": 0.5}
+            ).addTo(map_ba70a40f5d9099d747450c05a33f6bf7);
+        
+    
+            circle_marker_815d903974b4cc8667c857a9df8a46af.bindTooltip(
+                `<div>
+                     Chemin du But (Lyon) – ratio OMS 1.10
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_507bb83a379340bc1d195a1131daa4e8 = L.circleMarker(
+                [50.7037579, 3.0505151],
+                {"bubblingMouseEvents": true, "color": "#444", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#E24B4A", "fillOpacity": 0.8, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 8.084016736401674, "stroke": true, "weight": 0.5}
+            ).addTo(map_ba70a40f5d9099d747450c05a33f6bf7);
+        
+    
+            circle_marker_507bb83a379340bc1d195a1131daa4e8.bindTooltip(
+                `<div>
+                     Wambrechies (Lille) – ratio OMS 1.36
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_bb88266047e0419adae8e3689da466b7 = L.circleMarker(
+                [48.60418705013009, 7.7756695271219005],
+                {"bubblingMouseEvents": true, "color": "#444", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#E24B4A", "fillOpacity": 0.8, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 7.196999999999999, "stroke": true, "weight": 0.5}
+            ).addTo(map_ba70a40f5d9099d747450c05a33f6bf7);
+        
+    
+            circle_marker_bb88266047e0419adae8e3689da466b7.bindTooltip(
+                `<div>
+                     Chemin du Doernelbruck, Robertsau, Strasbourg (Strasbourg) – ratio OMS 1.07
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_54b17be686d43f9a413a5503ba37f3f1 = L.circleMarker(
+                [48.8638458, 2.37565],
+                {"bubblingMouseEvents": true, "color": "#444", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#EF9F27", "fillOpacity": 0.8, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 6.305961002785516, "stroke": true, "weight": 0.5}
+            ).addTo(map_ba70a40f5d9099d747450c05a33f6bf7);
+        
+    
+            circle_marker_54b17be686d43f9a413a5503ba37f3f1.bindTooltip(
+                `<div>
+                     Avenue Parmentier (Paris) – ratio OMS 0.77
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_d8a461a71e69077f078653f7fa444367 = L.circleMarker(
+                [48.872386, 2.504768],
+                {"bubblingMouseEvents": true, "color": "#444", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#E24B4A", "fillOpacity": 0.8, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 7.627548746518106, "stroke": true, "weight": 0.5}
+            ).addTo(map_ba70a40f5d9099d747450c05a33f6bf7);
+        
+    
+            circle_marker_d8a461a71e69077f078653f7fa444367.bindTooltip(
+                `<div>
+                     Fauvette ave (Paris) – ratio OMS 1.21
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_a7907a3a86983b123ff532daa99b0d24 = L.circleMarker(
+                [45.6535, 4.986337],
+                {"bubblingMouseEvents": true, "color": "#444", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#EF9F27", "fillOpacity": 0.8, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 6.272342857142857, "stroke": true, "weight": 0.5}
+            ).addTo(map_ba70a40f5d9099d747450c05a33f6bf7);
+        
+    
+            circle_marker_a7907a3a86983b123ff532daa99b0d24.bindTooltip(
+                `<div>
+                     Toussieu  (Lyon) – ratio OMS 0.76
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_9fd66b70fb34d29eea9aa95def1d8340 = L.circleMarker(
+                [44.843712, -0.665114],
+                {"bubblingMouseEvents": true, "color": "#444", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#639922", "fillOpacity": 0.8, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 4.524, "stroke": true, "weight": 0.5}
+            ).addTo(map_ba70a40f5d9099d747450c05a33f6bf7);
+        
+    
+            circle_marker_9fd66b70fb34d29eea9aa95def1d8340.bindTooltip(
+                `<div>
+                     Mérignac (Bordeaux) – ratio OMS 0.17
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_4e4776d5559373e51982f8c759904124 = L.circleMarker(
+                [48.7531, 2.3136],
+                {"bubblingMouseEvents": true, "color": "#444", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#EF9F27", "fillOpacity": 0.8, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 6.903454038997214, "stroke": true, "weight": 0.5}
+            ).addTo(map_ba70a40f5d9099d747450c05a33f6bf7);
+        
+    
+            circle_marker_4e4776d5559373e51982f8c759904124.bindTooltip(
+                `<div>
+                     Résidence de Tourvoie (Paris) – ratio OMS 0.97
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_f58770b4473f3a7a74ceff9629b40518 = L.circleMarker(
+                [43.31817600008412, 5.379957999558043],
+                {"bubblingMouseEvents": true, "color": "#444", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#E24B4A", "fillOpacity": 0.8, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 7.06348710090054, "stroke": true, "weight": 0.5}
+            ).addTo(map_ba70a40f5d9099d747450c05a33f6bf7);
+        
+    
+            circle_marker_f58770b4473f3a7a74ceff9629b40518.bindTooltip(
+                `<div>
+                     MARSEILLE PLOMBIERES 2 (Marseille) – ratio OMS 1.02
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_c3ef4958cd1e44a8308ff140fdca402d = L.circleMarker(
+                [44.85717400011958, -0.6591779999808794],
+                {"bubblingMouseEvents": true, "color": "#444", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#639922", "fillOpacity": 0.8, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 5.850212304328185, "stroke": true, "weight": 0.5}
+            ).addTo(map_ba70a40f5d9099d747450c05a33f6bf7);
+        
+    
+            circle_marker_c3ef4958cd1e44a8308ff140fdca402d.bindTooltip(
+                `<div>
+                     Mérignac - Magudas (Bordeaux) – ratio OMS 0.62
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_466a16f84c6605ff1c4794059d3f71d8 = L.circleMarker(
+                [44.861605146127005, -0.5557380528406174],
+                {"bubblingMouseEvents": true, "color": "#444", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#EF9F27", "fillOpacity": 0.8, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 6.5433426183844015, "stroke": true, "weight": 0.5}
+            ).addTo(map_ba70a40f5d9099d747450c05a33f6bf7);
+        
+    
+            circle_marker_466a16f84c6605ff1c4794059d3f71d8.bindTooltip(
+                `<div>
+                     Bordeaux; rue Lucien Faure (Bordeaux) – ratio OMS 0.85
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_2650f4dde0f823c47fa4a91882ba2e91 = L.circleMarker(
+                [48.89199, 2.34933],
+                {"bubblingMouseEvents": true, "color": "#444", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#E24B4A", "fillOpacity": 0.8, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 8.034958217270194, "stroke": true, "weight": 0.5}
+            ).addTo(map_ba70a40f5d9099d747450c05a33f6bf7);
+        
+    
+            circle_marker_2650f4dde0f823c47fa4a91882ba2e91.bindTooltip(
+                `<div>
+                     6 Boulevard Ornano Paris 75018 (Paris) – ratio OMS 1.34
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_62c05a651224720d2330b7e472b476d9 = L.circleMarker(
+                [43.61065299978379, 1.4428169995698992],
+                {"bubblingMouseEvents": true, "color": "#444", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#EF9F27", "fillOpacity": 0.8, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 6.266826187383634, "stroke": true, "weight": 0.5}
+            ).addTo(map_ba70a40f5d9099d747450c05a33f6bf7);
+        
+    
+            circle_marker_62c05a651224720d2330b7e472b476d9.bindTooltip(
+                `<div>
+                     Toulouse Arcole (Toulouse) – ratio OMS 0.76
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+</script>
+</html>
