@@ -29,32 +29,47 @@
 
 ### Q1 – Stations au plus fort taux d'utilisation
 *Méthode* : taux d'utilisation = mouvements / capacité (rotations par place).
+
 ![Q1](../figures/p2_q1_top_stations.png)
+
 *Chiffre clé* : la station **6045 – Brotteaux / Vauban (Lyon)** atteint 19,9 rotations par place sur la période, soit près de 8 fois la médiane de l'ensemble des stations (2,52). Usage médian par ville : Lyon 2,96 ; Paris 2,87 ; Toulouse 2,36 ; Bordeaux 1,56 ; Lille 1,43 ; Nantes 0,82 ; Strasbourg 0,10.
+
 *Interprétation* : l'utilisation est très concentrée : une minorité de stations, situées dans les hypercentres, près des pôles d'emploi et des gares (quartier de la Part-Dieu à Lyon par exemple), tourne beaucoup plus vite que les autres. Lyon, Paris et Toulouse forment le trio de tête, avec des réseaux denses et très utilisés. Le très faible score de Strasbourg s'explique par la nature de Vélhop, surtout tourné vers la location de moyenne et longue durée plutôt que vers le libre-service en station.
 
 ### Q2 – Zones à offre insuffisante
 *Méthode* : part du temps où chaque station est vide ; regroupement par zones d'environ 1 km.
+
 ![Q2](../figures/p2_q2_zones_vides.png)
+
 *Chiffre clé* : 673 stations (17 % des stations analysées) sont vides plus de 20 % du temps, et 66 zones d'environ 1 km sont en offre insuffisante. Les zones les plus touchées sont vides de 50 % à 99 % du temps (Strasbourg, nord et est de Lyon, secteur de Roubaix pour Lille, sud de Toulouse, est de la proche banlieue parisienne).
+
 *Interprétation* : les zones en sous-offre sont presque toutes situées en périphérie des agglomérations, et non dans les centres. Les vélos y sont pris le matin pour rejoindre le centre mais reviennent peu : ces stations se vident et restent vides une grande partie de la journée. Une partie d'entre elles ne compte que 2 à 4 stations, ce qui rend la zone très sensible au moindre départ. Ce sont des cibles prioritaires pour ajouter des vélos ou des points d'attache.
 
 ### Q3 – Pics d'utilisation journaliers
 *Méthode* : mouvements par station et par heure, moyennés par heure de la journée (heure de Paris).
+
 ![Q3](../figures/p2_q3_profil_horaire.png)
+
 *Chiffre clé* : pic du matin à **8 h** (4,0 mouvements par station et par heure, moyenne des 7 villes) et pic du soir à **19 h** (3,9), contre 0,5 au creux de 4 h, soit 8 fois moins. À Paris, les pics atteignent 8,5 (8 h) et 9,7 (19 h) mouvements par station et par heure.
+
 *Interprétation* : le profil est nettement bimodal, avec deux pointes aux heures des trajets domicile–travail et une activité quasi nulle la nuit : le vélo en libre-service sert d'abord aux déplacements pendulaires. Paris présente une intensité environ deux fois supérieure à la moyenne, et un pic du soir plus marqué que celui du matin, les retours étant complétés par des déplacements de loisirs. Le creux de fin de matinée (vers 10–11 h) puis la reprise du midi confirment ce rythme. Ce profil repose sur une seule journée (jeudi soir → vendredi) : chaque heure n'est observée qu'une fois.
 
 ### Q4 – Déséquilibres géographiques
 *Méthode* : occupation moyenne de chaque station parisienne cartographiée (carte interactive : `figures/p2_q4_carte_paris.html`).
+
 ![Q4](../figures/p2_q4_carte_paris.png)
+
 *Chiffre clé* : occupation moyenne de 47,7 % dans le centre (< 3 km de Châtelet), **33,5 % dans l'anneau parisien de 3 à 6 km** et 46,5 % en proche banlieue. Le centre cumule la plus forte part de temps à vide (7,4 %) et à plein (5,5 %).
+
 *Interprétation* : la disponibilité n'est pas homogène. Les arrondissements périphériques de Paris (3–6 km) sont les plus dégarnis : ils servent de points de départ et se vident plus qu'ils ne se remplissent. Le centre est le plus instable, avec à la fois le plus de stations vides et le plus de stations pleines : forte attractivité, mais flux très déséquilibrés selon l'heure. La banlieue, rarement vide (3,4 % du temps), est la mieux équilibrée sur la journée.
 
 ### Q5 – Stations critiques à rééquilibrer
 *Méthode* : vide plus de 30 % du temps → à recharger ; pleine plus de 30 % du temps → à vider.
+
 ![Q5](../figures/p2_q5_stations_critiques.png)
+
 *Chiffre clé* : **439 stations à recharger** (vides plus de 30 % du temps) et **211 à vider** (pleines plus de 30 % du temps), soit 17 % du parc. Lyon, Toulouse et Paris concentrent l'essentiel des stations critiques.
+
 *Interprétation* : les stations à recharger sont deux fois plus nombreuses que celles à vider : le problème principal est le manque de vélos là où ils partent, plus que le manque de places. En croisant avec Q2 et Q4, le rééquilibrage devrait recharger en priorité les stations périphériques avant le pic de 8 h, puis vider les stations centrales saturées en fin de matinée et avant le pic de 19 h.
 
 ## 2.4 Limites
