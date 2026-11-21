@@ -4,3 +4,6 @@ pyarrow
 numpy
 matplotlib
 seaborn
+scipy
+folium
+jupyter
